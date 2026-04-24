@@ -111,6 +111,15 @@ if uploaded_files:
         use_container_width=True
     )
 
+# ✅ COMPUTE GRAND OVERALL RATING
+overall_rating = combined_df.loc["OVERALL AVERAGE", "Average Rating"]
+
+# ✅ DISPLAY STATEMENT BELOW THE TABLE
+st.markdown(
+    f"""
+    ### ✅ Your Overall Rating is **{overall_rating:.2f}**
+    """)
+    
     # =============================
     # QUALITATIVE RESPONSES
     # =============================
