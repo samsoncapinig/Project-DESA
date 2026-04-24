@@ -179,7 +179,7 @@ with col_text:
         **Developed by Samson G. Capinig**  
         Senior Education Program Specialist, SMME  
         Project DESA • SDO Masbate City  
-        © {datetime.now().year} Samson G. Capinig. All rights reserved.
+        © {datetime.now().year} . All rights reserved.
         """
     )
 
