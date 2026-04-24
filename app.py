@@ -19,7 +19,7 @@ st.set_page_config(page_title="SDO Masbate City Project DESA", layout="wide")
 
 col_logo, col_title = st.columns([1, 8])
 with col_logo:
-    st.image("logo.png", width=1200)
+    st.image("logo.png", width=12000)
 with col_title:
     st.title("SDO Masbate City Project DESA")
     st.markdown("Designed for faster data analysis and interpretation of Daily and End-of-Program Evaluation results.")
