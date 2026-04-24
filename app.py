@@ -175,7 +175,7 @@ with col_pic:
 with col_text:
     st.markdown(
         """
-        **Developed by Samson Capinig**  
+        **Developed by Samson G. Capinig**  
         Senior Educaiton Program Specialist, SMME  
         Project DESA • SDO Masbate City
         """
