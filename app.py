@@ -111,15 +111,6 @@ if uploaded_files:
         use_container_width=True
     )
 
-    # ✅ ADD OVERALL AVERAGE ROW
-    overall_row = combined_df.mean(axis=0)
-    overall_row.name = "OVERALL AVERAGE"
-
-    combined_df = pd.concat(
-        [combined_df, pd.DataFrame([overall_row])],
-        axis=0
-    )
-
     # =============================
     # QUALITATIVE RESPONSES
     # =============================
