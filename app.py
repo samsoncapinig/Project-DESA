@@ -112,7 +112,7 @@ if uploaded_files:
     )
 
     # ✅ COMPUTE GRAND OVERALL RATING
-    overall_rating = combined_df.loc["Average Rating"].mean()
+    overall_rating = combined_df["Average Rating"].mean()
 
     # ✅ DISPLAY STATEMENT BELOW THE TABLE
     st.markdown(
