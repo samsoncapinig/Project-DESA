@@ -23,7 +23,8 @@ with col_logo:
 with col_title:
     st.title("SDO Masbate City Project DESA")
     st.markdown("Designed for faster data analysis and interpretation of Daily and End-of-Program Evaluation results.")
-
+    
+    st.markdown("Please click the Upload button or drag and drop to add the excel file. You can drag and drop one by one or all at once.")
 # =============================
 # CONSTANTS
 # =============================
