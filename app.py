@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import letter
 # PAGE CONFIG
 # =============================
 st.set_page_config(page_title="SDO Masbate City Project DESA", layout="wide")
-st.image("logo.png", width=120)
+st.image("logo.png", width=1200)
 st.title("SDO Masbate City Project DESA")
 st.markdown("Designed for faster data analaysis and interpretation of the Daily Evaluation and End of Program Evaluation Results for DepEd Trainings.")
 
