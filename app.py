@@ -96,32 +96,20 @@ if uploaded_files:
             for col in cols:
                 qualitative_results[label].extend(df[col].dropna().astype(str).tolist())
 
-  # =============================
-# COMBINED CATEGORY TABLE
-# =============================
-st.divider()
-st.subheader("📊 Combined Category Ratings")
+    # =============================
+    # COMBINED CATEGORY TABLE
+    # =============================
+    st.divider()
+    st.subheader("📊 Combined Category Ratings")
 
-combined_df = pd.DataFrame(category_results)
+    combined_df = pd.DataFrame(category_results)
+    combined_df["Average Rating"] = combined_df.mean(axis=1)
+    combined_df = combined_df.sort_values("Average Rating", ascending=False)
 
-# Row-wise average per category
-combined_df["Average Rating"] = combined_df.mean(axis=1)
-
-# ✅ ADD OVERALL AVERAGE ROW
-overall_row = combined_df.mean(axis=0)
-overall_row.name = "OVERALL AVERAGE"
-
-combined_df = pd.concat(
-    [combined_df, pd.DataFrame([overall_row])],
-    axis=0
-)
-
-combined_df = combined_df.sort_values("Average Rating", ascending=False)
-
-st.dataframe(
-    combined_df.reset_index().rename(columns={"index": "Category"}),
-    use_container_width=True
-)
+    st.dataframe(
+        combined_df.reset_index().rename(columns={"index": "Category"}),
+        use_container_width=True
+    )
 
     # =============================
     # QUALITATIVE RESPONSES
