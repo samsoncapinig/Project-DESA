@@ -134,55 +134,114 @@ if uploaded_files:
     # =============================
     # PDF REPORT
     # =============================
+    st.set_page_config(page_title="SDO Masbate City Project DESA", layout="wide")
+    st.title("SDO Masbate City Project DESA – Evaluation Dashboard")
+    
+    # ---- FORM 5 INPUTS ----
     st.subheader("Training Information (Form 5)")
-
     title = st.text_input("Title of Training Program")
     date_venue = st.text_input("Date and Venue")
     lsp_division = st.text_input("Learning Service Provider / Division")
     learning_areas = st.text_input("Learning Areas")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
+    
+    c1, c2, c3 = st.columns(3)
+    with c1:
         teaching = st.number_input("No. of Teaching Participants", min_value=0)
-    with col2:
+    with c2:
         non_teaching = st.number_input("No. of Non‑Teaching Participants", min_value=0)
-    with col3:
+    with c3:
         teaching_related = st.number_input("No. of Teaching‑Related Participants", min_value=0)
-        
-    if st.button("Generate PDF Report"):
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            doc = SimpleDocTemplate(tmp.name, pagesize=letter)
-            styles = getSampleStyleSheet()
-            elements = []
-
-            elements.append(Paragraph("SDO Masbate City – Evaluation Report", styles["Heading1"]))
-            elements.append(Paragraph("Combined Category Ratings", styles["Heading2"]))
-
-            table_data = [["Category"] + list(combined_df.columns)]
-            for idx, row in combined_df.iterrows():
-                table_data.append([idx] + [round(v, 2) for v in row.values])
-
-            table = Table(table_data, repeatRows=1)
-            table.setStyle(TableStyle([
-                ('GRID', (0,0), (-1,-1), 1, colors.black),
-                ('BACKGROUND', (0,0), (-1,0), colors.lightgrey)
-            ]))
-            elements.append(table)
-
-            elements.append(Paragraph("Qualitative Responses", styles["Heading2"]))
-            for label, responses in qualitative_results.items():
-                elements.append(Paragraph(label, styles["Heading3"]))
-                for r in responses:
-                    elements.append(Paragraph(r, styles["Normal"]))
-
-            doc.build(elements)
-            with open(tmp.name, "rb") as f:
-                st.download_button("Download PDF", f, "Evaluation_Report_v6.pdf")
-else:
-    st.info("Upload at least one evaluation file to begin.")
-
-
-
+    
+    # ---- FILE UPLOAD ----
+    uploaded_files = st.file_uploader(
+        "Upload Daily and End-of-Program Evaluation Files",
+        type=["csv", "xlsx", "xls"],
+        accept_multiple_files=True
+    )
+    
+    # ---- HELPERS ----
+    def load_any_file(uploaded_file):
+        try:
+            return pd.read_excel(uploaded_file, engine="openpyxl")
+        except Exception:
+            uploaded_file.seek(0)
+            return pd.read_csv(uploaded_file)
+    
+    def detect_rating_columns(df):
+        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+        exclude_keywords = ["id", "response"]
+        return [c for c in numeric_cols if not any(k in c.lower() for k in exclude_keywords)]
+    
+    def get_file_overall_rating(df):
+        rating_cols = detect_rating_columns(df)
+        if not rating_cols:
+            return None
+        return round(df[rating_cols].mean().mean(), 2)
+    
+    # ---- PROCESS FILES ----
+    daily_results = []
+    end_program_result = None
+    
+    if uploaded_files:
+        for f in uploaded_files:
+            df = load_any_file(f)
+            overall = get_file_overall_rating(df)
+            fname = f.name.lower()
+            if "daily_evaluation" in fname:
+                daily_results.append((f.name, overall))
+            elif "end_of_program" in fname:
+                end_program_result = overall
+    
+    # ---- OVERALL FORMULA ----
+    all_scores = [r for _, r in daily_results if r is not None]
+    if end_program_result is not None:
+        all_scores.append(end_program_result)
+    
+    overall_result = round(sum(all_scores) / len(all_scores), 2) if all_scores else None
+    
+    # ---- PDF GENERATION ----
+    if st.button("Generate Form 5 PDF") and uploaded_files:
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        doc = SimpleDocTemplate(tmp.name, pagesize=letter)
+        styles = getSampleStyleSheet()
+        elements = []
+    
+        elements.append(Paragraph("<b>Overall Monitoring & Evaluation Results (Form 5)</b>", styles["Title"]))
+    
+        info_table = Table([
+            ["Title of Training Program", title],
+            ["Date and Venue", date_venue],
+            ["Learning Service Provider / Division", lsp_division],
+            ["Learning Areas", learning_areas],
+            ["Teaching Participants", teaching],
+            ["Non‑Teaching Participants", non_teaching],
+            ["Teaching‑Related Participants", teaching_related],
+        ])
+    
+        info_table.setStyle(TableStyle([
+            ('GRID', (0,0), (-1,-1), 1, colors.black),
+            ('BACKGROUND', (0,0), (0,-1), colors.whitesmoke)
+        ]))
+    
+        elements.append(info_table)
+        elements.append(Paragraph("Result of Daily Online Evaluation", styles["Heading3"]))
+    
+        daily_table = [["File Name", "Overall Rating"]] + daily_results
+        elements.append(Table(daily_table, style=[('GRID',(0,0),(-1,-1),1,colors.black)]))
+    
+        elements.append(Paragraph("Result of End-of-Program Evaluation", styles["Heading3"]))
+        elements.append(Table([
+            ["End‑of‑Program Evaluation", end_program_result]
+        ], style=[('GRID',(0,0),(-1,-1),1,colors.black)]))
+    
+        elements.append(Paragraph(f"<b>Overall Result:</b> {overall_result}", styles["Heading2"]))
+    
+        doc.build(elements)
+    
+        with open(tmp.name, "rb") as f:
+            st.download_button("Download Form 5 PDF", f, file_name="Form_5_Evaluation_Report.pdf")
+    
+    
 
 
 
