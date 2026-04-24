@@ -159,18 +159,6 @@ else:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 st.divider()
 
 col_pic, col_text = st.columns([1, 6])
@@ -181,9 +169,9 @@ with col_pic:
 with col_text:
     st.markdown(
         """
-        **Developed by Samson Capinig**  
-        Project DESA • SDO Masbate City  
-        Built for everyone's benefits
+        **Developed by Samson G. Capinig**  
+        Senior Education Program Specialist, SMME
+        Project DESA • SDO Masbate City 
         """
     )
 
