@@ -165,6 +165,7 @@ else:
 
 
 from datetime import datetime
+
 st.divider()
 
 col_pic, col_text = st.columns([1, 6])
@@ -174,10 +175,11 @@ with col_pic:
 
 with col_text:
     st.markdown(
-        """
+        f"""
         **Developed by Samson G. Capinig**  
-        Senior Educaiton Program Specialist, SMME  
-        Project DESA • SDO Masbate City
+        Senior Education Program Specialist, SMME  
+        Project DESA • SDO Masbate City  
+        © {datetime.now().year} Samson G. Capinig. All rights reserved.
         """
     )
 
