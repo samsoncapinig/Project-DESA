@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import letter
 # PAGE CONFIG
 # =============================
 st.set_page_config(page_title="SDO Masbate City Project DESA", layout="wide")
-st.title(("logo.png", width=80)"SDO Masbate City Project DESA")
+st.title("logo.png", width=80", "SDO Masbate City Project DESA")
 st.markdown("Strict detection of qualitative column headers and full response listing.")
 
 # =============================
