@@ -148,7 +148,7 @@ if uploaded_files:
         non_teaching = st.number_input("No. of Non‑Teaching Participants", min_value=0)
     with col3:
         teaching_related = st.number_input("No. of Teaching‑Related Participants", min_value=0)
-    ``
+        
     if st.button("Generate PDF Report"):
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
             doc = SimpleDocTemplate(tmp.name, pagesize=letter)
