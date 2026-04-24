@@ -20,7 +20,7 @@ st.image("logo.png", width=1200)
 st.title("SDO Masbate City Project DESA")
 st.markdown("Designed for faster data analaysis and interpretation of the Daily Evaluation and End of Program Evaluation Results for DepEd Trainings.")
 
-st.markdown("Please click the + button or drag and drop to add the excel file. You can drag and drop one by one or all at once.")
+st.markdown("Please click the Upload button or drag and drop to add the excel file. You can drag and drop one by one or all at once.")
 # =============================
 # CONSTANTS
 # =============================
