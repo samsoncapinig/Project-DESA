@@ -183,7 +183,7 @@ with col_text:
         """
         **Developed by Samson Capinig**  
         Project DESA • SDO Masbate City  
-        Built using Streamlit and Python
+        Built for everyone's benefits
         """
     )
 
