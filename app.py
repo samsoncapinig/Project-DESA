@@ -156,3 +156,34 @@ if uploaded_files:
                 st.download_button("Download PDF", f, "Evaluation_Report_v6.pdf")
 else:
     st.info("Upload at least one evaluation file to begin.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+st.divider()
+
+col_pic, col_text = st.columns([1, 6])
+
+with col_pic:
+    st.image("samson.png", width=80)
+
+with col_text:
+    st.markdown(
+        """
+        **Developed by Samson Capinig**  
+        Project DESA • SDO Masbate City  
+        Built using Streamlit and Python
+        """
+    )
+
