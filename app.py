@@ -134,6 +134,21 @@ if uploaded_files:
     # =============================
     # PDF REPORT
     # =============================
+    st.subheader("Training Information (Form 5)")
+
+    title = st.text_input("Title of Training Program")
+    date_venue = st.text_input("Date and Venue")
+    lsp_division = st.text_input("Learning Service Provider / Division")
+    learning_areas = st.text_input("Learning Areas")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        teaching = st.number_input("No. of Teaching Participants", min_value=0)
+    with col2:
+        non_teaching = st.number_input("No. of Non‑Teaching Participants", min_value=0)
+    with col3:
+        teaching_related = st.number_input("No. of Teaching‑Related Participants", min_value=0)
+    ``
     if st.button("Generate PDF Report"):
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
             doc = SimpleDocTemplate(tmp.name, pagesize=letter)
