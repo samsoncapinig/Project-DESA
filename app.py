@@ -16,15 +16,11 @@ import tempfile
 # PAGE CONFIG
 # =============================
 st.set_page_config(page_title="SDO Masbate City Project DESA", layout="wide")
+st.image("logo.png", width=1200)
+st.title("SDO Masbate City Project DESA")
+st.markdown("Designed for faster data analaysis and interpretation of the Daily Evaluation and End of Program Evaluation Results for DepEd Trainings.")
 
-col_logo, col_title = st.columns([1, 8])
-with col_logo:
-    st.image("logo.png", width=12000)
-with col_title:
-    st.title("SDO Masbate City Project DESA")
-    st.markdown("Designed for faster data analysis and interpretation of Daily and End-of-Program Evaluation results.")
-    
-    st.markdown("Please click the Upload button or drag and drop to add the excel file. You can drag and drop one by one or all at once.")
+st.markdown("Please click the Upload button or drag and drop to add the excel file. You can drag and drop one by one or all at once.")
 # =============================
 # CONSTANTS
 # =============================
