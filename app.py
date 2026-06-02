@@ -199,30 +199,25 @@ if end_program_results:
     overall_end = end_df["Average Rating"].mean()
     st.markdown(f"### ✅ Overall End-of-Program Rating: {overall_end:.2f}")
 
-# =============================
-# FINAL OVERALL RESULT
-# =============================
+# ✅ FINAL OVERALL RESULT
 if daily_results and end_program_results:
     final_rating = (overall_daily + overall_end) / 2
     st.markdown(f"## 🏆 Overall DESA Rating: {final_rating:.2f}")
 
+# ✅ QUALITATIVE RESPONSES (SEPARATE)
+st.subheader("📝 Qualitative Responses")
 
-    # =============================
-    # QUALITATIVE RESPONSES
-    # =============================
-    st.subheader("📝 Qualitative Responses")
+for label, responses in qualitative_results.items():
+    if responses:
+        st.markdown(f"### {label}")
+        st.dataframe(pd.DataFrame({label: responses}))
 
-    for label, responses in qualitative_results.items():
-        if responses:
-            st.markdown(f"### {label}")
-            st.dataframe(pd.DataFrame({label: responses}))
+        if st.button(f"Analyze {label}", key=label):
+            with st.spinner("Analyzing..."):
+                result = generate_summary(responses)
 
-            if st.button(f"Analyze {label}", key=label):
-                with st.spinner("Analyzing..."):
-                    result = generate_summary(responses)
-
-                st.markdown("#### 🤖 Thematic Analysis")
-                st.write(result)
+            st.markdown("#### 🤖 Thematic Analysis")
+            st.write(result)
     
 # =============================
 # REPORT GENERATOR UI
@@ -268,7 +263,27 @@ if st.button("Generate Form 5"):
         Number of Teaching Related Participants: {number_of_teaching_related_participants}
         """
 
-narrative = generate_ai_narrative(training_title, context_text)
+        narrative = generate_ai_narrative(training_title, context_text)
+
+        # ✅ Split AI output
+        analysis = ""
+        recommendation = ""
+
+        if "Recommendation" in narrative:
+            parts = narrative.split("Recommendation")
+            analysis = parts[0].replace("Analysis", "").strip()
+            recommendation = parts[1].strip()
+        else:
+            analysis = narrative
+
+        # ✅ Store results
+        st.session_state["analysis"] = analysis
+        st.session_state["recommendation"] = recommendation
+        st.session_state["narrative"] = narrative
+
+        st.write("### 🤖 AI Narrative")
+        st.write(narrative)
+
 
 # ✅ Split AI output
 analysis = ""
@@ -288,39 +303,36 @@ st.session_state["recommendation"] = recommendation
 
 # ✅ GENERATE REPORT
 if st.button("Generate Report"):
-    narrative = st.session_state.get("narrative", "No AI narrative generated.")
 
+    data = {
+        "training_title": training_title,
+        "date": date,
+        "learning_service_provider": learning_service_provider,
+        "learning_areas": learning_areas,
+        "teaching": number_of_teaching_participants,
+        "non_teaching": number_of_non_teaching_participants,
+        "teaching_related": number_of_teaching_related_participants,
 
-data = {
-    "training_title": training_title,
-    "date": date,
-    "learning_service_provider": learning_service_provider,
-    "learning_areas": learning_areas,
-    "teaching": number_of_teaching_participants,
-    "non_teaching": number_of_non_teaching_participants,
-    "teaching_related": number_of_teaching_related_participants,
+        # ✅ averages
+        "daily_general_average": round(overall_daily, 2) if 'overall_daily' in locals() else "N/A",
+        "end_of_program_average": round(overall_end, 2) if 'overall_end' in locals() else "N/A",
+        "overall_results": round(final_rating, 2) if 'final_rating' in locals() else "N/A",
 
-    # ✅ ADD THESE (CRITICAL)
-    "daily_general_average": round(overall_daily, 2) if 'overall_daily' in locals() else "N/A",
-    "end_of_program_average": round(overall_end, 2) if 'overall_end' in locals() else "N/A",
-    "overall_results": round(final_rating, 2) if 'final_rating' in locals() else "N/A",
+        # ✅ AI outputs
+        "analysis": st.session_state.get("analysis", ""),
+        "recommendation": st.session_state.get("recommendation", "")
+    }
 
-    # ✅ ANALYSIS + RECOMMENDATION
-    "analysis": st.session_state.get("analysis", ""),
-    "recommendation": st.session_state.get("recommendation", "")
-}
+    filepath = generate_report(data)
 
-filepath = generate_report(data)
+    st.success("✅ Report Generated!")
 
-st.success("✅ Report Generated!")
-
-with open(filepath, "rb") as file:
-    st.download_button(
-        "📥 Download Form 5",
-        file,
-        file_name=filepath
-    )
-
+    with open(filepath, "rb") as file:
+        st.download_button(
+            "📥 Download Form 5",
+            file,
+            file_name=filepath
+        )
 # =============================
 # FOOTER
 # =============================
