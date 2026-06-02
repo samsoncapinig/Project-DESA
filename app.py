@@ -66,6 +66,9 @@ def detect_strict_qualitative_columns(df):
                 found[label].append(col)
     return found
 
+# =============================
+# GEMINI AI RESPONSE SUMMARIZER 
+# =============================
 
 import google.generativeai as genai
 
@@ -97,6 +100,34 @@ def generate_summary(text_list):
     except Exception as e:
         return f"An error occurred: {e}"
 
+# =============================
+# GEMINI AI REPORT GENERATOR 
+# =============================
+
+def generate_ai_narrative(school, score):
+    model = genai.GenerativeModel("gemini-3-flash-preview")
+
+    prompt = f"""
+    You are an educational evaluator.
+
+    Write a professional analysis from the responses of the participants:
+    
+    Then write recommendations based on the analysis you have written:
+
+
+    Analysis: {analysis}
+    Recommendation: {recommendation}%
+
+    Include:
+    - strengths
+    - areas for improvement
+    - overall assessment
+
+    Keep it concise and formal and suitable for DepEd reporting.
+    """
+
+    response = model.generate_content(prompt)
+    return response.text
 
 # --- Streamlit UI ---
 
