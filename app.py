@@ -150,26 +150,28 @@ if uploaded_files:
         df = load_any_file(f)
         st.success(f"Loaded {f.name}")
 
-        if rating_cols = detect_rating_columns(df)
+        rating_cols = detect_rating_columns(df)
 
-if rating_cols:
-    cat_df = pd.DataFrame({
-        "Category": [extract_category(c) for c in rating_cols],
-        "Rating": [df[c].replace(-999, pd.NA).mean() for c in rating_cols]
+    if rating_cols:
+        cat_df = pd.DataFrame({
+            "Category": [extract_category(c) for c in rating_cols],
+            "Rating": [df[c].replace(-999, pd.NA).mean() for c in rating_cols]
     })
 
     # remove unwanted columns
-    cat_df = cat_df[~cat_df["Category"].str.lower().isin(EXCLUDED_CATEGORIES)]
+        cat_df = 
+cat_df[~cat_df["Category"].str.lower().isin(EXCLUDED_CATEGORIES)]
 
     # group by category
     cat_avg = cat_df.groupby("Category", as_index=False).mean()
 
     # ✅ SEPARATE FILES BASED ON NAME
-    if "Daily" in f.name:
-        daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
+        if "Daily" in f.name:
+            daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-    elif "End" in f.name:
-        end_program_results[f.name] = cat_avg.set_index("Category")["Rating"]
+        elif "End" in f.name:
+            end_program_results[f.name] = cat_avg.set_index("Category")
+["Rating"]
 
 # =============================
 # DAILY EVALUATION TABLE
