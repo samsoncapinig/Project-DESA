@@ -12,6 +12,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
+from utils.report_generator import generate_report
 import tempfile
 import google.generativeai as genai
 
@@ -197,7 +198,57 @@ if uploaded_files:
                 st.markdown("#### 🤖 Thematic Analysis")
                 st.write(result)
     
+# =============================
+# REPORT GENERATOR UI
+# =============================
 
+st.title("📊 Generate Form 5")
+
+training_title = st.text_input("Title of Training Program")
+date = st.text_input("Date and Venue")
+learning_service_provider = st.text_input("Learning Service Provider/Division")
+learning_areas = st.text_input("Learning Areas")
+teaching = st.text_input("Teaching")
+non_teaching = st.text_input("Non-Teaching")
+teaching_related = st.text_input("Teaching Related")
+
+
+
+if st.button("Generate Form 5"):
+    if training_title, date, learning_service_provider, learning_areas, teaching, non_teaching, and teching_related:
+        narrative = generate_ai_narrative(training_title, date, learning_service_provider, learning_areas, teaching, non_teaching, teching_related)
+        st.session_state["analysis"] = analysis
+        st.session_state["recommendation"] = recommendation
+        st.write("### AI Analysis")
+        st.write(analysis)
+
+if st.button("Generate Report"):
+    narrative = st.session_state.get("analysis,recommendation ", "No AI narrative generated.")
+
+    data = {
+        "training_title": training_title,
+        "date": Date and Venue,
+        "learning_service_provider": Learning Service Provider,
+        "learning_areas": Learning Areas,
+        "teaching": Teaching
+        "non_teaching": Non-Teaching
+        "teaching_related": Teaching Related
+    }
+
+    filepath = generate_report(data)
+
+    st.success("✅ Report Generated!")
+
+    with open(filepath, "rb") as file:
+        st.download_button(
+            "📥 Generate Form 5",
+            file,
+            file_name=filepath
+        )
+
+# =============================
+# FOOTER
+# =============================
 
 from datetime import datetime
 
