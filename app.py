@@ -204,9 +204,17 @@ training_title = st.text_input("Title of Training Program")
 date = st.text_input("Date and Venue")
 learning_service_provider = st.text_input("Learning Service Provider/Division")
 learning_areas = st.text_input("Learning Areas")
-number_of_teaching_participants = st.text_input("Teaching")
-number_of_non_teaching_participants = st.text_input("Non-Teaching")
-number_of_teaching_related_participants = st.text_input("Teaching Related")
+number_of_teaching_participants = st.number_input(
+    "Number of Teaching Participants", min_value=0, step=1
+)
+
+number_of_non_teaching_participants = st.number_input(
+    "Number of Non-Teaching Participants", min_value=0, step=1
+)
+
+number_of_teaching_related_participants = st.number_input(
+    "Number of Teaching Related Participants", min_value=0, step=1
+)
 
 
 # ✅ GENERATE AI NARRATIVE
