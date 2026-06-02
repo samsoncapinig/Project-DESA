@@ -223,8 +223,6 @@ for label, responses in qualitative_results.items():
 # REPORT GENERATOR UI
 # =============================
 
-st.title("📊 Generate Form 5")
-
 training_title = st.text_input("Title of Training Program")
 date = st.text_input("Date and Venue")
 learning_service_provider = st.text_input("Learning Service Provider/Division")
