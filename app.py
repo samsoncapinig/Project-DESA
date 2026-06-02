@@ -247,10 +247,7 @@ if st.button("Generate Form 5"):
     if all([
         training_title,
         date,
-        learning_service_provider,
-        learning_areas,
-        number_of_teaching_participants,
-        number_of_non_teaching_participants,
+        learning_service_provider,        learning_service_provider,
         number_of_teaching_related_participants
     ]):
 
@@ -276,28 +273,17 @@ if st.button("Generate Form 5"):
         else:
             analysis = narrative
 
-        # ✅ Store results
+        # ✅ SAVE VALUES
         st.session_state["analysis"] = analysis
         st.session_state["recommendation"] = recommendation
         st.session_state["narrative"] = narrative
 
         st.write("### 🤖 AI Narrative")
         st.write(narrative)
+``
+        learning_areas,
+        number_of_teaching_participants,
 
-
-# ✅ Split AI output
-analysis = ""
-recommendation = ""
-
-if "Recommendation" in narrative:
-    parts = narrative.split("Recommendation")
-    analysis = parts[0].replace("Analysis", "").strip()
-    recommendation = parts[1].strip()
-else:
-    analysis = narrative
-
-st.session_state["analysis"] = analysis
-st.session_state["recommendation"] = recommendation
 
 
 
