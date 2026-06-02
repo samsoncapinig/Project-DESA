@@ -74,7 +74,6 @@ def detect_strict_qualitative_columns(df):
 import google.generativeai as genai
 
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-3-flash-preview")
 
 def generate_summary(text_list):
     combined_text = "\n---\n".join(text_list[:50])  # limit for safety
@@ -85,15 +84,10 @@ def generate_summary(text_list):
         "Group the summarized responses into Positive Feedback and Needs Improvement. "
         "If the responses are from Most Significant Learning, Learnings, or Suggestions columns, summarize only the responses into 3 to 5 concise themes. "
         "Include direct quotation from the responses if possible. "
+        "Develop also analysis and recommendations. "
         "Do not include subcategories, analysis, or explanations.\n\n"
         f"Responses:\n{combined_text}"
     )
-
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"An error occurred: {e}"
 
     try:
         response = model.generate_content(prompt)
@@ -213,26 +207,37 @@ non_teaching = st.text_input("Non-Teaching")
 teaching_related = st.text_input("Teaching Related")
 
 
-
 if st.button("Generate Form 5"):
-    if training_title, date, learning_service_provider, learning_areas, teaching, non_teaching, and teching_related:
-        narrative = generate_ai_narrative(training_title, date, learning_service_provider, learning_areas, teaching, non_teaching, teching_related)
-        st.session_state["analysis"] = analysis
-        st.session_state["recommendation"] = recommendation
-        st.write("### AI Analysis")
-        st.write(analysis)
+    if all([training_title, date, learning_service_provider, learning_areas, teaching, non_teaching, teaching_related]):
+
+        context_text = f"""
+        Date and Venue: {date}
+        Provider: {learning_service_provider}
+        Learning Areas: {learning_areas}
+        Teaching: {teaching}
+        Non-Teaching: {non_teaching}
+        Teaching Related: {teaching_related}
+        """
+
+        narrative = generate_ai_narrative(training_title, context_text)
+
+        st.session_state["narrative"] = narrative
+
+        st.write("### 🤖 AI Narrative")
+        st.write(narrative)
 
 if st.button("Generate Report"):
-    narrative = st.session_state.get("analysis,recommendation ", "No AI narrative generated.")
+    narrative = st.session_state.get("narrative", "No AI narrative generated.")
 
     data = {
         "training_title": training_title,
-        "date": Date and Venue,
-        "learning_service_provider": Learning Service Provider,
-        "learning_areas": Learning Areas,
-        "teaching": Teaching
-        "non_teaching": Non-Teaching
-        "teaching_related": Teaching Related
+        "date": date,
+        "learning_service_provider": learning_service_provider,
+        "learning_areas": learning_areas,
+        "teaching": teaching,
+        "non_teaching": non_teaching,
+        "teaching_related": teaching_related,
+        "narrative": narrative
     }
 
     filepath = generate_report(data)
@@ -241,7 +246,7 @@ if st.button("Generate Report"):
 
     with open(filepath, "rb") as file:
         st.download_button(
-            "📥 Generate Form 5",
+            "📥 Download Form 5",
             file,
             file_name=filepath
         )
