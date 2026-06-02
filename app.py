@@ -204,9 +204,9 @@ training_title = st.text_input("Title of Training Program")
 date = st.text_input("Date and Venue")
 learning_service_provider = st.text_input("Learning Service Provider/Division")
 learning_areas = st.text_input("Learning Areas")
-teaching = st.text_input("Teaching")
-non_teaching = st.text_input("Non-Teaching")
-teaching_related = st.text_input("Teaching Related")
+number_of_teaching_participants = st.text_input("Teaching")
+number_of_non_teaching_participants = st.text_input("Non-Teaching")
+number_of_teaching_related_participants = st.text_input("Teaching Related")
 
 
 if st.button("Generate Form 5"):
@@ -216,9 +216,9 @@ if st.button("Generate Form 5"):
         Date and Venue: {date}
         Provider: {learning_service_provider}
         Learning Areas: {learning_areas}
-        No. of Teaching Participants: {teaching}
-        No. of Non-Teaching Participants: {non_teaching}
-        No. of Teaching Related Participants: {teaching_related}
+        Number of Teaching Participants: {teaching}
+        Number of Non-Teaching Participants: {non_teaching}
+        Number of Teaching Related Participants: {teaching_related}
         """
 
         narrative = generate_ai_narrative(training_title, context_text)
