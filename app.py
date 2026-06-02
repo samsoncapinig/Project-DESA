@@ -137,8 +137,10 @@ uploaded_files = st.file_uploader(
     accept_multiple_files=True
 )
 
-category_results = {}
+daily_results = {}
+end_program_results = {}
 qualitative_results = defaultdict(list)
+
 
 # =============================
 # PROCESS FILES
@@ -149,33 +151,68 @@ if uploaded_files:
         st.success(f"Loaded {f.name}")
 
         rating_cols = detect_rating_columns(df)
-        if rating_cols:
-            cat_df = pd.DataFrame({
-                "Category": [extract_category(c) for c in rating_cols],
-                "Rating": [df[c].mean() for c in rating_cols]
-            })
 
-            cat_df = cat_df[~cat_df["Category"].str.lower().isin(EXCLUDED_CATEGORIES)]
-            cat_avg = cat_df.groupby("Category", as_index=False).mean()
+if rating_cols:
+    cat_df = pd.DataFrame({
+        "Category": [extract_category(c) for c in rating_cols],
+        "Rating": [df[c].replace(-999, pd.NA).mean() for c in rating_cols]
+    })
 
-            category_results[f.name] = cat_avg.set_index("Category")["Rating"]
+    # remove unwanted columns
+    cat_df = cat_df[~cat_df["Category"].str.lower().isin(EXCLUDED_CATEGORIES)]
 
-        qual_map = detect_strict_qualitative_columns(df)
-        for label, cols in qual_map.items():
-            for col in cols:
-                qualitative_results[label].extend(df[col].dropna().astype(str).tolist())
+    # group by category
+    cat_avg = cat_df.groupby("Category", as_index=False).mean()
 
-    # =============================
-    # COMBINED TABLE
-    # =============================
-    st.subheader("📊 Combined Category Ratings")
+    # ✅ SEPARATE FILES BASED ON NAME
+    if "Daily" in f.name:
+        daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-    combined_df = pd.DataFrame(category_results)
-    combined_df["Average Rating"] = combined_df.mean(axis=1)
+    elif "End" in f.name:
+        end_program_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-    st.dataframe(combined_df, use_container_width=True)
+# =============================
+# DAILY EVALUATION TABLE
+# =============================
+if daily_results:
+    st.subheader("📊 Daily Evaluation Results")
 
-    st.markdown(f"### ✅ Overall Rating: {combined_df['Average Rating'].mean():.2f}")
+    daily_df = pd.DataFrame(daily_results)
+    daily_df["Average Rating"] = daily_df.mean(axis=1)
+
+    st.dataframe(daily_df, use_container_width=True)
+
+    overall_daily = daily_df["Average Rating"].mean()
+    st.markdown(f"### ✅ Overall Daily Evaluation Rating: {overall_daily:.2f}")
+
+# =============================
+# END OF PROGRAM TABLE
+# =============================
+if end_program_results:
+    st.subheader("📊 End-of-Program Evaluation Results")
+
+    end_df = pd.DataFrame(end_program_results)
+    end_df["Average Rating"] = end_df.mean(axis=1)
+
+    st.dataframe(end_df, use_container_width=True)
+
+    overall_end = end_df["Average Rating"].mean()
+    st.markdown(f"### ✅ Overall End-of-Program Rating: {overall_end:.2f}")
+
+# =============================
+# FINAL OVERALL RESULT
+# =============================
+if daily_results and end_program_results:
+    final_rating = (overall_daily + overall_end) / 2
+    st.markdown(f"## 🏆 Overall DESA Rating: {final_rating:.2f}")
+
+# =============================
+# FINAL OVERALL RESULT
+# =============================
+if daily_results and end_program_results:
+    final_rating = (overall_daily + overall_end) / 2
+    st.markdown(f"## 🏆 Overall DESA Rating: {final_rating:.2f}")
+
 
     # =============================
     # QUALITATIVE RESPONSES
