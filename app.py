@@ -152,27 +152,25 @@ if uploaded_files:
 
         rating_cols = detect_rating_columns(df)
 
-    if rating_cols:
-        cat_df = pd.DataFrame({
-            "Category": [extract_category(c) for c in rating_cols],
-            "Rating": [df[c].replace(-999, pd.NA).mean() for c in rating_cols]
-    })
+        if rating_cols:
+            cat_df = pd.DataFrame({
+                "Category": [extract_category(c) for c in rating_cols],
+                "Rating": [df[c].replace(-999, pd.NA).mean() for c in rating_cols]
+            })
 
-    # remove unwanted columns
-        cat_df = 
-cat_df[~cat_df["Category"].str.lower().isin(EXCLUDED_CATEGORIES)]
+            # ✅ remove unwanted categories
+            cat_df = cat_df[~cat_df["Category"].str.lower().isin(EXCLUDED_CATEGORIES)]
 
-    # group by category
-    cat_avg = cat_df.groupby("Category", as_index=False).mean()
+            # ✅ group by category
+            cat_avg = cat_df.groupby("Category", as_index=False).mean()
 
-    # ✅ SEPARATE FILES BASED ON NAME
-        if "Daily" in f.name:
-            daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
+            # ✅ separate based on filename
+            if "Daily" in f.name:
+                daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-        elif "End" in f.name:
-            end_program_results[f.name] = cat_avg.set_index("Category")
-["Rating"]
-
+            elif "End" in f.name:
+                end_program_results[f.name] = cat_avg.set_index("Category")["Rating"]
+                
 # =============================
 # DAILY EVALUATION TABLE
 # =============================
@@ -200,13 +198,6 @@ if end_program_results:
 
     overall_end = end_df["Average Rating"].mean()
     st.markdown(f"### ✅ Overall End-of-Program Rating: {overall_end:.2f}")
-
-# =============================
-# FINAL OVERALL RESULT
-# =============================
-if daily_results and end_program_results:
-    final_rating = (overall_daily + overall_end) / 2
-    st.markdown(f"## 🏆 Overall DESA Rating: {final_rating:.2f}")
 
 # =============================
 # FINAL OVERALL RESULT
