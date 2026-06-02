@@ -150,7 +150,7 @@ if uploaded_files:
         df = load_any_file(f)
         st.success(f"Loaded {f.name}")
 
-        rating_cols = detect_rating_columns(df)
+        if rating_cols = detect_rating_columns(df)
 
 if rating_cols:
     cat_df = pd.DataFrame({
