@@ -109,15 +109,15 @@ def generate_ai_narrative(training_title, context_text):
     {context_text}
 
     Write:
-    1. Analysis of responses
-    2. Recommendations
+    1. A short analysis of responses of about 100 words
+    2. Recommendations of about 100 words
 
     Include:
     - strengths
     - areas for improvement
     - overall assessment
 
-    Keep it concise and formal for DepEd reporting.
+    Keep it very concise and formal for DepEd reporting.
     """
 
     try:
@@ -209,16 +209,25 @@ number_of_non_teaching_participants = st.text_input("Non-Teaching")
 number_of_teaching_related_participants = st.text_input("Teaching Related")
 
 
+# ✅ GENERATE AI NARRATIVE
 if st.button("Generate Form 5"):
-    if all([training_title, date, learning_service_provider, learning_areas, teaching, non_teaching, teaching_related]):
+    if all([
+        training_title,
+        date,
+        learning_service_provider,
+        learning_areas,
+        number_of_teaching_participants,
+        number_of_non_teaching_participants,
+        number_of_teaching_related_participants
+    ]):
 
         context_text = f"""
         Date and Venue: {date}
         Provider: {learning_service_provider}
         Learning Areas: {learning_areas}
-        Number of Teaching Participants: {teaching}
-        Number of Non-Teaching Participants: {non_teaching}
-        Number of Teaching Related Participants: {teaching_related}
+        Number of Teaching Participants: {number_of_teaching_participants}
+        Number of Non-Teaching Participants: {number_of_non_teaching_participants}
+        Number of Teaching Related Participants: {number_of_teaching_related_participants}
         """
 
         narrative = generate_ai_narrative(training_title, context_text)
@@ -228,6 +237,8 @@ if st.button("Generate Form 5"):
         st.write("### 🤖 AI Narrative")
         st.write(narrative)
 
+
+# ✅ GENERATE REPORT
 if st.button("Generate Report"):
     narrative = st.session_state.get("narrative", "No AI narrative generated.")
 
@@ -236,9 +247,9 @@ if st.button("Generate Report"):
         "date": date,
         "learning_service_provider": learning_service_provider,
         "learning_areas": learning_areas,
-        "teaching": teaching,
-        "non_teaching": non_teaching,
-        "teaching_related": teaching_related,
+        "teaching": number_of_teaching_participants,
+        "non_teaching": number_of_non_teaching_participants,
+        "teaching_related": number_of_teaching_related_participants,
         "narrative": narrative
     }
 
@@ -252,6 +263,7 @@ if st.button("Generate Report"):
             file,
             file_name=filepath
         )
+``
 
 # =============================
 # FOOTER
