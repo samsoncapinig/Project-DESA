@@ -310,16 +310,16 @@ data = {
     "recommendation": st.session_state.get("recommendation", "")
 }
 
-    filepath = generate_report(data)
+filepath = generate_report(data)
 
-    st.success("✅ Report Generated!")
+st.success("✅ Report Generated!")
 
-    with open(filepath, "rb") as file:
-        st.download_button(
-            "📥 Download Form 5",
-            file,
-            file_name=filepath
-        )
+with open(filepath, "rb") as file:
+    st.download_button(
+        "📥 Download Form 5",
+        file,
+        file_name=filepath
+    )
 
 # =============================
 # FOOTER
