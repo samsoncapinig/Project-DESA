@@ -268,28 +268,47 @@ if st.button("Generate Form 5"):
         Number of Teaching Related Participants: {number_of_teaching_related_participants}
         """
 
-        narrative = generate_ai_narrative(training_title, context_text)
+narrative = generate_ai_narrative(training_title, context_text)
 
-        st.session_state["narrative"] = narrative
+# ✅ Split AI output
+analysis = ""
+recommendation = ""
 
-        st.write("### 🤖 AI Narrative")
-        st.write(narrative)
+if "Recommendation" in narrative:
+    parts = narrative.split("Recommendation")
+    analysis = parts[0].replace("Analysis", "").strip()
+    recommendation = parts[1].strip()
+else:
+    analysis = narrative
+
+st.session_state["analysis"] = analysis
+st.session_state["recommendation"] = recommendation
+
 
 
 # ✅ GENERATE REPORT
 if st.button("Generate Report"):
     narrative = st.session_state.get("narrative", "No AI narrative generated.")
 
-    data = {
-        "training_title": training_title,
-        "date": date,
-        "learning_service_provider": learning_service_provider,
-        "learning_areas": learning_areas,
-        "teaching": number_of_teaching_participants,
-        "non_teaching": number_of_non_teaching_participants,
-        "teaching_related": number_of_teaching_related_participants,
-        "narrative": narrative
-    }
+
+data = {
+    "training_title": training_title,
+    "date": date,
+    "learning_service_provider": learning_service_provider,
+    "learning_areas": learning_areas,
+    "teaching": number_of_teaching_participants,
+    "non_teaching": number_of_non_teaching_participants,
+    "teaching_related": number_of_teaching_related_participants,
+
+    # ✅ ADD THESE (CRITICAL)
+    "daily_general_average": round(overall_daily, 2) if 'overall_daily' in locals() else "N/A",
+    "end_of_program_average": round(overall_end, 2) if 'overall_end' in locals() else "N/A",
+    "overall_results": round(final_rating, 2) if 'final_rating' in locals() else "N/A",
+
+    # ✅ ANALYSIS + RECOMMENDATION
+    "analysis": st.session_state.get("analysis", ""),
+    "recommendation": st.session_state.get("recommendation", "")
+}
 
     filepath = generate_report(data)
 
