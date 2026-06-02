@@ -1,5 +1,4 @@
 from docxtpl import DocxTemplate
-import os
 from datetime import datetime
 
 def generate_report(data):
@@ -8,26 +7,28 @@ def generate_report(data):
     doc = DocxTemplate(template_path)
 
     context = {
-        "Title of Training Program": data["training_title"],
-        "date": datetime.now().strftime("%B %d, %Y"),
-        "Learning Service Provider": data["learning_service_provider"],
-        "Teaching": data["teaching"],
-        "Non-Teaching": data["non_teaching"],
-        "Teaching Related": data["teaching_related"],
-        "Result of Daily Online Evaluation": data["daily_general_average"],
-        "Result of End-of-Program Evaluation": data["end_of_program_average"],
-        "Overall Result": data["overall_results"],
-        "Analysis": data["analysis"],
-        "Recommendation": data["recommendation"]
+        # ✅ MATCH YOUR TEMPLATE VARIABLES EXACTLY
+        "training_title": data.get("training_title", ""),
+        "date": data.get("date", datetime.now().strftime("%B %d, %Y")),
+        "learning_service_provider": data.get("learning_service_provider", ""),
+        "learning_areas": data.get("learning_areas", ""),
+        "teaching": data.get("teaching", ""),
+        "non_teaching": data.get("non_teaching", ""),
+        "teaching_related": data.get("teaching_related", ""),
+        "narrative": data.get("narrative", ""),
+
+        # OPTIONAL SAFE FIELDS
+        "daily_general_average": data.get("daily_general_average", "N/A"),
+        "end_of_program_average": data.get("end_of_program_average", "N/A"),
+        "overall_results": data.get("overall_results", "N/A"),
+        "analysis": data.get("analysis", ""),
+        "recommendation": data.get("recommendation", "")
     }
 
     doc.render(context)
 
-    filename = f"DESA_Report_{data['school_name'].replace(' ', '_')}.docx"
+    # ✅ SAFE filename (no missing key)
+    filename = f"DESA_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
+    doc.save(filename)
 
-    # IMPORTANT for Streamlit Cloud: save in memory-safe path
-    filepath = filename
-    doc.save(filepath)
-
-    return filepath
-``
+    return filename
