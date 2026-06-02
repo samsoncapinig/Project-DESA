@@ -99,30 +99,32 @@ def generate_summary(text_list):
 # GEMINI AI REPORT GENERATOR 
 # =============================
 
-def generate_ai_narrative(school, score):
-    model = genai.GenerativeModel("gemini-3-flash-preview")
-
+def generate_ai_narrative(training_title, context_text):
     prompt = f"""
     You are an educational evaluator.
 
-    Write a professional analysis from the responses of the participants:
-    
-    Then write recommendations based on the analysis you have written:
+    Training Program: {training_title}
 
+    Based on the following evaluation results:
+    {context_text}
 
-    Analysis: {analysis}
-    Recommendation: {recommendation}%
+    Write:
+    1. Analysis of responses
+    2. Recommendations
 
     Include:
     - strengths
     - areas for improvement
     - overall assessment
 
-    Keep it concise and formal and suitable for DepEd reporting.
+    Keep it concise and formal for DepEd reporting.
     """
 
-    response = model.generate_content(prompt)
-    return response.text
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"Error: {e}"
 
 # --- Streamlit UI ---
 
