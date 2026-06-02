@@ -216,9 +216,9 @@ if st.button("Generate Form 5"):
         Date and Venue: {date}
         Provider: {learning_service_provider}
         Learning Areas: {learning_areas}
-        Teaching: {teaching}
-        Non-Teaching: {non_teaching}
-        Teaching Related: {teaching_related}
+        No. of Teaching Participants: {teaching}
+        No. of Non-Teaching Participants: {non_teaching}
+        No. of Teaching Related Participants: {teaching_related}
         """
 
         narrative = generate_ai_narrative(training_title, context_text)
