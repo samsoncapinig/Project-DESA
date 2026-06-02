@@ -263,7 +263,6 @@ if st.button("Generate Report"):
             file,
             file_name=filepath
         )
-``
 
 # =============================
 # FOOTER
