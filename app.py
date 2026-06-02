@@ -280,7 +280,7 @@ if st.button("Generate Form 5"):
 
         st.write("### 🤖 AI Narrative")
         st.write(narrative)
-``
+
         learning_areas,
         number_of_teaching_participants,
 
