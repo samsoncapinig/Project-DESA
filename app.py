@@ -317,6 +317,24 @@ if st.button("Generate Report"):
             file,
             file_name=filepath
         )
+
+    # =============================
+    # QUALITATIVE RESPONSES
+    # =============================
+    st.subheader("📝 Qualitative Responses")
+
+    for label, responses in qualitative_results.items():
+        if responses:
+            st.markdown(f"### {label}")
+            st.dataframe(pd.DataFrame({label: responses}))
+
+            if st.button(f"Analyze {label}", key=label):
+                with st.spinner("Analyzing..."):
+                    result = generate_summary(responses)
+
+                st.markdown("#### 🤖 Thematic Analysis")
+                st.write(result)
+
 # =============================
 # FOOTER
 # =============================
