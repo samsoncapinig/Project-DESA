@@ -403,16 +403,16 @@ if has_daily and has_end:
 # ✅ CASE 2: ONLY ONE TYPE → KEEP YOUR OLD SYSTEM
 else:
     for label, responses in qualitative_results.items():
-        if responses:
-            st.markdown(f"### {label}")
-            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
+if responses:
+    st.markdown(f"### {label}")
+    st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
 
-            st.button(f"Analyze {label}", key=f"{label}_section2")
-                with st.spinner("Analyzing..."):
-                    result = generate_summary(responses)
+    st.button(f"Analyze {label}", key=f"{label}_section2")
+    with st.spinner("Analyzing..."):
+        result = generate_summary(responses)
 
-                st.markdown("#### 🤖 Thematic Analysis")
-                st.write(result)
+    st.markdown("#### 🤖 Thematic Analysis")
+    st.write(result)
 
 # =============================
 # FOOTER
