@@ -294,8 +294,6 @@ if st.button("Generate Form 5"):
 
 
 # ✅ GENERATE REPORT
-if st.button("Generate Report"):
-
     data = {
         "training_title": training_title,
         "date": date,
