@@ -94,33 +94,7 @@ def generate_summary(text_list):
         return response.text
     except Exception as e:
         return f"An error occurred: {e}"
-def generate_qualitative_analysis(responses):
-    combined_text = "\n---\n".join(responses[:80])
 
-    prompt = f"""
-    Based on the following participant responses:
-
-    {combined_text}
-
-    Make a short analysis of these responses.
-    Include strengths and weaknesses.
-
-    Make a short summary of recommendations based from the responses.
-
-    Format:
-
-    ANALYSIS:
-    ...
-
-    RECOMMENDATIONS:
-    ...
-    """
-
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"Error: {e}"
 
 # =============================
 # GEMINI AI REPORT GENERATOR 
@@ -213,34 +187,23 @@ if uploaded_files:
                 "Rating": [df[c].replace(-999, pd.NA).mean() for c in rating_cols]
             })
 
-            # ✅ remove unwanted categories
             cat_df = cat_df[~cat_df["Category"].str.lower().isin(EXCLUDED_CATEGORIES)]
-
-            # ✅ group by category
             cat_avg = cat_df.groupby("Category", as_index=False).mean()
 
-            # ✅ separate based on filename
             if "Daily" in f.name:
                 daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-# ✅ DETECT FILE TYPES
-has_daily = any("Daily" in f.name for f in uploaded_files)
-has_end = any("End" in f.name for f in uploaded_files)
+            elif "End" in f.name:
+                end_program_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-# ✅ COMBINE ALL QUALITATIVE RESPONSES
-all_qualitative_responses = []
+        # ✅ QUALITATIVE (CORRECT LOCATION)
+        qual_map = detect_strict_qualitative_columns(df)
 
-for responses in qualitative_results.values():
-    all_qualitative_responses.extend(responses)
-
-# ✅ QUALITATIVE DATA EXTRACTION (ADD THIS BACK)
-qual_map = detect_strict_qualitative_columns(df)
-
-    for label, cols in qual_map.items():
-        for col in cols:
-            qualitative_results[label].extend(
-                df[col].dropna().astype(str).tolist()
-            )
+        for label, cols in qual_map.items():
+            for col in cols:
+                qualitative_results[label].extend(
+                    df[col].dropna().astype(str).tolist()
+                )
 # =============================
 # COMBINED QUALITATIVE DATA
 # =============================
@@ -284,7 +247,6 @@ if daily_results and end_program_results:
     st.markdown(f"## 🏆 Overall DESA Rating: {final_rating:.2f}")
 
 # ✅ QUALITATIVE RESPONSES (SEPARATE)
-st.subheader("📝 Qualitative Responses")
 
 for label, responses in qualitative_results.items():
     if responses:
@@ -323,11 +285,14 @@ number_of_teaching_related_participants = st.number_input(
 # ✅ GENERATE AI NARRATIVE
 if st.button("Generate Form 5"):
     if all([
-        training_title,
-        date,
-        learning_service_provider,        learning_service_provider,
-        number_of_teaching_related_participants
-    ]):
+    training_title,
+    date,
+    learning_service_provider,
+    learning_areas,
+    number_of_teaching_participants,
+    number_of_non_teaching_participants,
+    number_of_teaching_related_participants
+]):
 
         context_text = f"""
         Date and Venue: {date}
