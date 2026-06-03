@@ -181,7 +181,7 @@ if uploaded_files:
 
         rating_cols = detect_rating_columns(df)
 
-        if rating_cols:
+    if rating_cols:
             cat_df = pd.DataFrame({
                 "Category": [extract_category(c) for c in rating_cols],
                 "Rating": [df[c].replace(-999, pd.NA).mean() for c in rating_cols]
@@ -196,14 +196,15 @@ if uploaded_files:
             elif "End" in f.name:
                 end_program_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-        # ✅ QUALITATIVE (CORRECT LOCATION)
+        # ✅ FIXED ALIGNMENT (same level as "if rating_cols:")
         qual_map = detect_strict_qualitative_columns(df)
 
-        for label, cols in qual_map.items():
+    for label, cols in qual_map.items():
             for col in cols:
                 qualitative_results[label].extend(
                     df[col].dropna().astype(str).tolist()
                 )
+
 # =============================
 # COMBINED QUALITATIVE DATA
 # =============================
@@ -366,7 +367,8 @@ if st.button("Generate Form 5"):
 # QUALITATIVE RESPONSES
 # =============================
 st.subheader("📝 Qualitative Responses")
-
+has_daily = len(daily_evaluation) > 0
+has_end = len(end_of_program_evaluation) > 0
 # ✅ CASE 1: BOTH Daily + End → AUTOMATIC AI MODE
 if has_daily and has_end:
 
