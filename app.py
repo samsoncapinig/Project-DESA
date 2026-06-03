@@ -197,7 +197,7 @@ if uploaded_files:
                 end_program_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
         # ✅ FIXED ALIGNMENT (same level as "if rating_cols:")
-        qual_map = detect_strict_qualitative_columns(df)
+    qual_map = detect_strict_qualitative_columns(df)
 
     for label, cols in qual_map.items():
             for col in cols:
