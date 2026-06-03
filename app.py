@@ -232,7 +232,6 @@ all_qualitative_responses = []
 
 for responses in qualitative_results.values():
     all_qualitative_responses.extend(responses)
-``
 
 # ✅ QUALITATIVE DATA EXTRACTION (ADD THIS BACK)
         qual_map = detect_strict_qualitative_columns(df)
