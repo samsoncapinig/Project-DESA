@@ -252,14 +252,12 @@ if daily_results and end_program_results:
 for label, responses in qualitative_results.items():
     if responses:
         st.markdown(f"### {label}")
-        st.dataframe(pd.DataFrame({label: responses}))
+if st.button(f"Analyze {label}", key=f"{label}_analysis"):
+    with st.spinner("Analyzing..."):
+        result = generate_summary(responses)
 
-        st.button(f"Analyze {label}", key=f"{label}_section1")
-            with st.spinner("Analyzing..."):
-                result = generate_summary(responses)
-
-            st.markdown("#### 🤖 Thematic Analysis")
-            st.write(result)
+    st.markdown("#### 🤖 Thematic Analysis")
+    st.write(result)
     
 # =============================
 # REPORT GENERATOR UI
