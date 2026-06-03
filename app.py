@@ -294,6 +294,7 @@ if st.button("Generate Form 5"):
 
 
 # ✅ GENERATE REPORT
+st.subheader("📊 Generate Report")
     data = {
         "training_title": training_title,
         "date": date,
