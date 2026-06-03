@@ -367,8 +367,8 @@ if st.button("Generate Form 5"):
 # QUALITATIVE RESPONSES
 # =============================
 st.subheader("📝 Qualitative Responses")
-has_daily = len(daily_evaluation) > 0
-has_end = len(end_of_program_evaluation) > 0
+has_daily = len(daily_results) > 0
+has_end = len(end_program_results) > 0
 # ✅ CASE 1: BOTH Daily + End → AUTOMATIC AI MODE
 if has_daily and has_end:
 
