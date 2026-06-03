@@ -168,8 +168,15 @@ if uploaded_files:
             if "Daily" in f.name:
                 daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-            elif "End" in f.name:
-                end_program_results[f.name] = cat_avg.set_index("Category")["Rating"]
+# ✅ QUALITATIVE DATA EXTRACTION (ADD THIS BACK)
+        qual_map = detect_strict_qualitative_columns(df)
+
+        for label, cols in qual_map.items():
+            for col in cols:
+                qualitative_results[label].extend(
+                    df[col].dropna().astype(str).tolist()
+                )
+
                 
 # =============================
 # DAILY EVALUATION TABLE
