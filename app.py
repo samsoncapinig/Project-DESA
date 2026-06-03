@@ -234,13 +234,13 @@ for responses in qualitative_results.values():
     all_qualitative_responses.extend(responses)
 
 # ✅ QUALITATIVE DATA EXTRACTION (ADD THIS BACK)
-        qual_map = detect_strict_qualitative_columns(df)
+qual_map = detect_strict_qualitative_columns(df)
 
-        for label, cols in qual_map.items():
-            for col in cols:
-                qualitative_results[label].extend(
-                    df[col].dropna().astype(str).tolist()
-                )
+    for label, cols in qual_map.items():
+        for col in cols:
+            qualitative_results[label].extend(
+                df[col].dropna().astype(str).tolist()
+            )
 # =============================
 # COMBINED QUALITATIVE DATA
 # =============================
