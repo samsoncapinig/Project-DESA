@@ -94,6 +94,33 @@ def generate_summary(text_list):
         return response.text
     except Exception as e:
         return f"An error occurred: {e}"
+def generate_qualitative_analysis(responses):
+    combined_text = "\n---\n".join(responses[:80])
+
+    prompt = f"""
+    Based on the following participant responses:
+
+    {combined_text}
+
+    Make a short analysis of these responses.
+    Include strengths and weaknesses.
+
+    Make a short summary of recommendations based from the responses.
+
+    Format:
+
+    ANALYSIS:
+    ...
+
+    RECOMMENDATIONS:
+    ...
+    """
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"Error: {e}"
 
 # =============================
 # GEMINI AI REPORT GENERATOR 
@@ -118,6 +145,34 @@ def generate_ai_narrative(training_title, context_text):
     - overall assessment
 
     Keep it very concise and formal for DepEd reporting.
+    """
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"Error: {e}"
+
+def generate_qualitative_analysis(responses):
+    combined_text = "\n---\n".join(responses[:80])  # safe limit
+
+    prompt = f"""
+    Based on the following participant responses:
+
+    {combined_text}
+
+    1. Make a short analysis of these responses.
+       Include strengths and weaknesses.
+
+    2. Make a short summary of recommendations based from the responses.
+
+    Format:
+
+    ANALYSIS:
+    ...
+
+    RECOMMENDATIONS:
+    ...
     """
 
     try:
@@ -168,6 +223,17 @@ if uploaded_files:
             if "Daily" in f.name:
                 daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
+# ✅ DETECT FILE TYPES
+has_daily = any("Daily" in f.name for f in uploaded_files)
+has_end = any("End" in f.name for f in uploaded_files)
+
+# ✅ COMBINE ALL QUALITATIVE RESPONSES
+all_qualitative_responses = []
+
+for responses in qualitative_results.values():
+    all_qualitative_responses.extend(responses)
+``
+
 # ✅ QUALITATIVE DATA EXTRACTION (ADD THIS BACK)
         qual_map = detect_strict_qualitative_columns(df)
 
@@ -176,6 +242,13 @@ if uploaded_files:
                 qualitative_results[label].extend(
                     df[col].dropna().astype(str).tolist()
                 )
+# =============================
+# COMBINED QUALITATIVE DATA
+# =============================
+all_qualitative_responses = []
+
+for responses in qualitative_results.values():
+    all_qualitative_responses.extend(responses)
 
                 
 # =============================
@@ -325,15 +398,49 @@ if st.button("Generate Form 5"):
             file_name=filepath
         )
 
-    # =============================
-    # QUALITATIVE RESPONSES
-    # =============================
-    st.subheader("📝 Qualitative Responses")
+# =============================
+# QUALITATIVE RESPONSES
+# =============================
+st.subheader("📝 Qualitative Responses")
+
+# ✅ CASE 1: BOTH Daily + End → AUTOMATIC AI MODE
+if has_daily and has_end:
 
     for label, responses in qualitative_results.items():
         if responses:
             st.markdown(f"### {label}")
-            st.dataframe(pd.DataFrame({label: responses}))
+            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
+
+    # ✅ AUTO AI ANALYSIS
+    if all_qualitative_responses:
+        with st.spinner("Generating AI Analysis..."):
+            ai_result = generate_qualitative_analysis(all_qualitative_responses)
+
+        st.markdown("## 🤖 AI Analysis & Recommendations")
+        st.write(ai_result)
+
+        # ✅ SPLIT AI OUTPUT
+        analysis = ""
+        recommendation = ""
+
+        if "RECOMMENDATIONS:" in ai_result:
+            parts = ai_result.split("RECOMMENDATIONS:")
+            analysis = parts[0].replace("ANALYSIS:", "").strip()
+            recommendation = parts[1].strip()
+        else:
+            analysis = ai_result
+
+        # ✅ SAVE FOR REPORT
+        st.session_state["analysis"] = analysis
+        st.session_state["recommendation"] = recommendation
+
+
+# ✅ CASE 2: ONLY ONE TYPE → KEEP YOUR OLD SYSTEM
+else:
+    for label, responses in qualitative_results.items():
+        if responses:
+            st.markdown(f"### {label}")
+            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
 
             if st.button(f"Analyze {label}", key=label):
                 with st.spinner("Analyzing..."):
