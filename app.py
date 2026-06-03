@@ -181,7 +181,7 @@ if uploaded_files:
 
         rating_cols = detect_rating_columns(df)
 
-    if rating_cols:
+        if rating_cols:
             cat_df = pd.DataFrame({
                 "Category": [extract_category(c) for c in rating_cols],
                 "Rating": [df[c].replace(-999, pd.NA).mean() for c in rating_cols]
@@ -192,14 +192,13 @@ if uploaded_files:
 
             if "Daily" in f.name:
                 daily_results[f.name] = cat_avg.set_index("Category")["Rating"]
-
             elif "End" in f.name:
                 end_program_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-        # ✅ FIXED ALIGNMENT (same level as "if rating_cols:")
-    qual_map = detect_strict_qualitative_columns(df)
+        # ✅ qualitative must ALSO be inside the loop
+        qual_map = detect_strict_qualitative_columns(df)
 
-    for label, cols in qual_map.items():
+        for label, cols in qual_map.items():
             for col in cols:
                 qualitative_results[label].extend(
                     df[col].dropna().astype(str).tolist()
@@ -403,16 +402,16 @@ if has_daily and has_end:
 # ✅ CASE 2: ONLY ONE TYPE → KEEP YOUR OLD SYSTEM
 else:
     for label, responses in qualitative_results.items():
-if responses:
-    st.markdown(f"### {label}")
-    st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
+        if responses:
+            st.markdown(f"### {label}")
+            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
 
-    st.button(f"Analyze {label}", key=f"{label}_section2")
-    with st.spinner("Analyzing..."):
-        result = generate_summary(responses)
+            if st.button(f"Analyze {label}", key=f"{label}_section2"):
+                with st.spinner("Analyzing..."):
+                    result = generate_summary(responses)
 
-    st.markdown("#### 🤖 Thematic Analysis")
-    st.write(result)
+                st.markdown("#### 🤖 Thematic Analysis")
+                st.write(result)
 
 # =============================
 # FOOTER
