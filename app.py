@@ -254,7 +254,7 @@ for label, responses in qualitative_results.items():
         st.markdown(f"### {label}")
         st.dataframe(pd.DataFrame({label: responses}))
 
-        if st.button(f"Analyze {label}", key=label):
+        st.button(f"Analyze {label}", key=f"{label}_section1")
             with st.spinner("Analyzing..."):
                 result = generate_summary(responses)
 
@@ -407,7 +407,7 @@ else:
             st.markdown(f"### {label}")
             st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
 
-            if st.button(f"Analyze {label}", key=label):
+            st.button(f"Analyze {label}", key=f"{label}_section2")
                 with st.spinner("Analyzing..."):
                     result = generate_summary(responses)
 
