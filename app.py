@@ -325,6 +325,20 @@ if uploaded_files:
 
 # ✅ GENERATE AI NARRATIVE
 if st.button("Generate Form 5"):
+    # ✅ If no AI analysis yet, generate automatically
+    if "analysis" not in st.session_state or not st.session_state["analysis"]:
+        if all_qualitative_responses:
+            with st.spinner("Generating AI analysis for report..."):
+                ai_result = generate_qualitative_analysis(all_qualitative_responses)
+
+            # ✅ Split result
+            if "RECOMMENDATIONS:" in ai_result:
+                parts = ai_result.split("RECOMMENDATIONS:")
+                st.session_state["analysis"] = parts[0].replace("ANALYSIS:", "").strip()
+                st.session_state["recommendation"] = parts[1].strip()
+            else:
+                st.session_state["analysis"] = ai_result
+                st.session_state["recommendation"] = ""
     if all([
     training_title,
     date,
