@@ -408,16 +408,11 @@ has_end = len(end_program_results) > 0
 # ✅ CASE 1: BOTH Daily + End → AUTOMATIC AI MODE
 if has_daily and has_end:
 
-    for label, responses in qualitative_results.items():
-        if responses:
-            st.markdown(f"### {label}")
-            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
-
     # ✅ AUTO AI ANALYSIS
     if all_qualitative_responses:
         with st.spinner("Generating AI Analysis..."):
             ai_result = generate_qualitative_analysis(all_qualitative_responses)
-
+        st.divider()
         st.markdown("## 🤖 AI Analysis & Recommendations")
         st.write(ai_result)
 
