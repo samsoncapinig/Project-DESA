@@ -212,6 +212,42 @@ all_qualitative_responses = []
 for responses in qualitative_results.values():
     all_qualitative_responses.extend(responses)
 
+# =============================
+# COMBINED QUALITATIVE TABLE + AI BUTTON
+# =============================
+
+if all_qualitative_responses:
+    st.subheader("📋 Combined Qualitative Responses")
+
+    combined_df = pd.DataFrame({
+        "Participant Responses": all_qualitative_responses
+    })
+
+    st.dataframe(combined_df, use_container_width=True)
+
+    # ✅ AI Analysis Button
+    if st.button("Analyze All Qualitative Responses"):
+        with st.spinner("Analyzing all responses..."):
+            ai_result = generate_qualitative_analysis(all_qualitative_responses)
+
+        st.markdown("## 🤖 Overall Analysis & Recommendations")
+        st.write(ai_result)
+
+        # ✅ SPLIT OUTPUT
+        combined_analysis = ""
+        combined_recommendation = ""
+
+        if "RECOMMENDATIONS:" in ai_result:
+            parts = ai_result.split("RECOMMENDATIONS:")
+            combined_analysis = parts[0].replace("ANALYSIS:", "").strip()
+            combined_recommendation = parts[1].strip()
+        else:
+            combined_analysis = ai_result
+
+        # ✅ SAVE FOR REPORT USE
+        st.session_state["analysis"] = combined_analysis
+        st.session_state["recommendation"] = combined_recommendation
+
                 
 # =============================
 # DAILY EVALUATION TABLE
