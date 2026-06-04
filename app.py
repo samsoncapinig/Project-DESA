@@ -29,7 +29,6 @@ st.set_page_config(page_title="SDO Masbate City Project DESA", layout="wide")
 st.image("logo.png", width=1200)
 st.title("SDO Masbate City Project DESA")
 st.markdown("Designed for faster data analysis and interpretation of evaluation results.")
-st.markdown(Upload the Daily Evaluations or the End-of-Program Evaluation to get the results of each. You can upload at once the files to get analysis and recommendations.")
 
 # =============================
 # CONSTANTS
