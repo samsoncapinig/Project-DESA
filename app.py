@@ -162,6 +162,7 @@ def generate_qualitative_analysis(responses):
 # =============================
 uploaded_files = st.file_uploader(
     "Upload evaluation files",
+    "Note: Upload the Daily Evaluations or the End-of-Program Evaluation to get the results of each. You can upload at once the files to get analysis and recommendations.",
     type=["csv", "xlsx"],
     accept_multiple_files=True
 )
