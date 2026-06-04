@@ -33,8 +33,4 @@ def generate_report(data):
 
     return filename
 
-Paragraph("Analysis", styles["Heading2"]),
-Paragraph(data["analysis"], styles["Normal"]),
 
-Paragraph("Recommendations", styles["Heading2"]),
-Paragraph(data["recommendation"], styles["Normal"]),
