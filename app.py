@@ -416,7 +416,7 @@ if has_daily and has_end:
         with st.spinner("Generating AI Analysis..."):
             ai_result = generate_qualitative_analysis(all_qualitative_responses)
         st.divider()
-        st.markdown("## 🤖 AI Analysis & Recommendations")
+        st.markdown("## 🤖 Analysis & Recommendations")
         st.write(ai_result)
 
         # ✅ SPLIT AI OUTPUT
