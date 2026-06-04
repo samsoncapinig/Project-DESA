@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import re
 import os
+import random
 from collections import defaultdict
 from datetime import datetime
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
@@ -128,8 +129,10 @@ def generate_ai_narrative(training_title, context_text):
         return f"Error: {e}"
 
 def generate_qualitative_analysis(responses):
-    combined_text = "\n---\n".join(responses[:80])  # safe limit
+    sample_size = min(len(responses), 80)  # max 80, or less if not enough data
+    sampled_responses = random.sample(responses, sample_size)
 
+    combined_text = "\n---\n".join(sampled_responses)
     prompt = f"""
     Based on the following participant responses:
 
