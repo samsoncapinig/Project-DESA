@@ -297,26 +297,28 @@ for label, responses in qualitative_results.items():
             st.write(result)
     
 # =============================
-# REPORT GENERATOR UI
+# REPORT GENERATOR UI (SHOW ONLY IF FILES EXIST)
 # =============================
-st.subheader("📊 Generate Form 5")
+if uploaded_files:
 
-training_title = st.text_input("Title of Training Program")
-date = st.text_input("Date and Venue")
-learning_service_provider = st.text_input("Learning Service Provider/Division")
-learning_areas = st.text_input("Learning Areas")
-number_of_teaching_participants = st.number_input(
-    "Number of Teaching Participants", min_value=0, step=1
-)
+    st.subheader("📊 Generate Form 5")
 
-number_of_non_teaching_participants = st.number_input(
-    "Number of Non-Teaching Participants", min_value=0, step=1
-)
+    training_title = st.text_input("Title of Training Program")
+    date = st.text_input("Date and Venue")
+    learning_service_provider = st.text_input("Learning Service Provider/Division")
+    learning_areas = st.text_input("Learning Areas")
 
-number_of_teaching_related_participants = st.number_input(
-    "Number of Teaching Related Participants", min_value=0, step=1
-)
+    number_of_teaching_participants = st.number_input(
+        "Number of Teaching Participants", min_value=0, step=1
+    )
 
+    number_of_non_teaching_participants = st.number_input(
+        "Number of Non-Teaching Participants", min_value=0, step=1
+    )
+
+    number_of_teaching_related_participants = st.number_input(
+        "Number of Teaching Related Participants", min_value=0, step=1
+    )
 
 # ✅ GENERATE AI NARRATIVE
 if st.button("Generate Form 5"):
