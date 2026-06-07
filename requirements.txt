@@ -1,7 +1,7 @@
 streamlit
 pandas
 numpy
-anthropic
+google-generativeai
 openpyxl
 reportlab
 docxtpl
