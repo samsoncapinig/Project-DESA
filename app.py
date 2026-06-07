@@ -15,10 +15,11 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 from report_generator import generate_report
 import tempfile
-import anthropic
+import google.generativeai as genai
 
-# ✅ GitHub Copilot (Anthropic) setup
-client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
+# ✅ Gemini setup
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+model = genai.GenerativeModel("gemini-3-flash-preview")
 
 
 # =============================
@@ -68,8 +69,12 @@ def detect_strict_qualitative_columns(df):
     return found
 
 # =============================
-# COPILOT AI RESPONSE SUMMARIZER 
+# GEMINI AI RESPONSE SUMMARIZER 
 # =============================
+
+import google.generativeai as genai
+
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 def generate_summary(text_list):
     combined_text = "\n---\n".join(text_list[:50])  # limit for safety
@@ -86,20 +91,14 @@ def generate_summary(text_list):
     )
 
     try:
-        message = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return message.content[0].text
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
         return f"An error occurred: {e}"
 
 
 # =============================
-# COPILOT AI REPORT GENERATOR 
+# GEMINI AI REPORT GENERATOR 
 # =============================
 
 def generate_ai_narrative(training_title, context_text):
@@ -124,14 +123,8 @@ def generate_ai_narrative(training_title, context_text):
     """
 
     try:
-        message = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return message.content[0].text
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
         return f"Error: {e}"
 
@@ -160,14 +153,8 @@ def generate_qualitative_analysis(responses):
     """
 
     try:
-        message = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return message.content[0].text
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
         return f"Error: {e}"
 
