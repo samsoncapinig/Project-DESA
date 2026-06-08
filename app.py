@@ -19,7 +19,7 @@ import google.generativeai as genai
 
 # ✅ Gemini setup
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-3-flash-preview")
+model = genai.GenerativeModel("gemini-3.1-flash")
 
 
 # =============================
