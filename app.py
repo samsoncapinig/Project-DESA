@@ -14,6 +14,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 from report_generator import generate_report
+from ppt_generator import generate_ppt_report
 import tempfile
 import google.generativeai as genai
 
@@ -304,118 +305,169 @@ for label, responses in qualitative_results.items():
 # =============================
 if uploaded_files:
 
-    st.subheader("📊 Generate Form 5")
+    st.subheader("📊 Generate Reports")
 
-    training_title = st.text_input("Title of Training Program")
-    date = st.text_input("Date and Venue")
-    learning_service_provider = st.text_input("Learning Service Provider/Division")
-    learning_areas = st.text_input("Learning Areas")
+    # Create two tabs: one for Word, one for PowerPoint
+    tab_word, tab_ppt = st.tabs(["📄 Generate Form 5 (Word)", "📊 Generate PowerPoint"])
 
-    number_of_teaching_participants = st.number_input(
-        "Number of Teaching Participants", min_value=0, step=1
-    )
+    with tab_word:
+        st.markdown("### Form 5 - MS Word Report")
+        
+        training_title = st.text_input("Title of Training Program", key="word_title")
+        date = st.text_input("Date and Venue", key="word_date")
+        learning_service_provider = st.text_input("Learning Service Provider/Division", key="word_provider")
+        learning_areas = st.text_input("Learning Areas", key="word_areas")
 
-    number_of_non_teaching_participants = st.number_input(
-        "Number of Non-Teaching Participants", min_value=0, step=1
-    )
-
-    number_of_teaching_related_participants = st.number_input(
-        "Number of Teaching Related Participants", min_value=0, step=1
-    )
-
-# ✅ GENERATE AI NARRATIVE
-if st.button("Generate Form 5"):
-    # ✅ If no AI analysis yet, generate automatically
-    if "analysis" not in st.session_state or not st.session_state["analysis"]:
-        if all_qualitative_responses:
-            with st.spinner("Generating AI analysis for report..."):
-                ai_result = generate_qualitative_analysis(all_qualitative_responses)
-
-            # ✅ Split result
-            if "RECOMMENDATIONS:" in ai_result:
-                parts = ai_result.split("RECOMMENDATIONS:")
-                st.session_state["analysis"] = parts[0].replace("ANALYSIS:", "").strip()
-                st.session_state["recommendation"] = parts[1].strip()
-            else:
-                st.session_state["analysis"] = ai_result
-                st.session_state["recommendation"] = ""
-    if all([
-    training_title,
-    date,
-    learning_service_provider,
-    learning_areas,
-    number_of_teaching_participants,
-    number_of_non_teaching_participants,
-    number_of_teaching_related_participants
-]):
-
-        context_text = f"""
-        Date and Venue: {date}
-        Provider: {learning_service_provider}
-        Learning Areas: {learning_areas}
-        Number of Teaching Participants: {number_of_teaching_participants}
-        Number of Non-Teaching Participants: {number_of_non_teaching_participants}
-        Number of Teaching Related Participants: {number_of_teaching_related_participants}
-        """
-
-        narrative = generate_ai_narrative(training_title, context_text)
-
-        # ✅ Split AI output
-        analysis = ""
-        recommendation = ""
-
-        if "Recommendation" in narrative:
-            parts = narrative.split("Recommendation")
-            analysis = parts[0].replace("Analysis", "").strip()
-            recommendation = parts[1].strip()
-        else:
-            analysis = narrative
-
-        # ✅ SAVE VALUES
-        st.session_state["analysis"] = analysis
-        st.session_state["recommendation"] = recommendation
-        st.session_state["narrative"] = narrative
-
-        st.write("### 🤖 AI Narrative")
-        st.write(narrative)
-
-        learning_areas,
-        number_of_teaching_participants,
-
-
-
-
-# ✅ GENERATE REPORT
-    st.subheader("📊 Generate Report")
-    data = {
-        "training_title": training_title,
-        "date": date,
-        "learning_service_provider": learning_service_provider,
-        "learning_areas": learning_areas,
-        "teaching": number_of_teaching_participants,
-        "non_teaching": number_of_non_teaching_participants,
-        "teaching_related": number_of_teaching_related_participants,
-
-        # ✅ averages
-        "daily_general_average": round(overall_daily, 2) if 'overall_daily' in locals() else "N/A",
-        "end_of_program_average": round(overall_end, 2) if 'overall_end' in locals() else "N/A",
-        "overall_results": round(final_rating, 2) if 'final_rating' in locals() else "N/A",
-
-        # ✅ AI outputs
-        "analysis": st.session_state.get("analysis", ""),
-        "recommendation": st.session_state.get("recommendation", "")
-    }
-
-    filepath = generate_report(data)
-
-    st.success("✅ Report Generated!")
-
-    with open(filepath, "rb") as file:
-        st.download_button(
-            "📥 Download Form 5",
-            file,
-            file_name=filepath
+        number_of_teaching_participants = st.number_input(
+            "Number of Teaching Participants", min_value=0, step=1, key="word_teaching"
         )
+
+        number_of_non_teaching_participants = st.number_input(
+            "Number of Non-Teaching Participants", min_value=0, step=1, key="word_non_teaching"
+        )
+
+        number_of_teaching_related_participants = st.number_input(
+            "Number of Teaching Related Participants", min_value=0, step=1, key="word_teaching_related"
+        )
+
+        # ✅ GENERATE AI NARRATIVE
+        if st.button("Generate Form 5"):
+            # ✅ If no AI analysis yet, generate automatically
+            if "analysis" not in st.session_state or not st.session_state["analysis"]:
+                if all_qualitative_responses:
+                    with st.spinner("Generating AI analysis for report..."):
+                        ai_result = generate_qualitative_analysis(all_qualitative_responses)
+
+                    # ✅ Split result
+                    if "RECOMMENDATIONS:" in ai_result:
+                        parts = ai_result.split("RECOMMENDATIONS:")
+                        st.session_state["analysis"] = parts[0].replace("ANALYSIS:", "").strip()
+                        st.session_state["recommendation"] = parts[1].strip()
+                    else:
+                        st.session_state["analysis"] = ai_result
+                        st.session_state["recommendation"] = ""
+            if all([
+            training_title,
+            date,
+            learning_service_provider,
+            learning_areas,
+            number_of_teaching_participants,
+            number_of_non_teaching_participants,
+            number_of_teaching_related_participants
+        ]):
+
+                context_text = f"""
+                Date and Venue: {date}
+                Provider: {learning_service_provider}
+                Learning Areas: {learning_areas}
+                Number of Teaching Participants: {number_of_teaching_participants}
+                Number of Non-Teaching Participants: {number_of_non_teaching_participants}
+                Number of Teaching Related Participants: {number_of_teaching_related_participants}
+                """
+
+                narrative = generate_ai_narrative(training_title, context_text)
+
+                # ✅ Split AI output
+                analysis = ""
+                recommendation = ""
+
+                if "Recommendation" in narrative:
+                    parts = narrative.split("Recommendation")
+                    analysis = parts[0].replace("Analysis", "").strip()
+                    recommendation = parts[1].strip()
+                else:
+                    analysis = narrative
+
+                # ✅ SAVE VALUES
+                st.session_state["analysis"] = analysis
+                st.session_state["recommendation"] = recommendation
+                st.session_state["narrative"] = narrative
+
+                st.write("### 🤖 AI Narrative")
+                st.write(narrative)
+
+            # ✅ GENERATE REPORT
+            st.markdown("### Generate Report")
+            data = {
+                "training_title": training_title,
+                "date": date,
+                "learning_service_provider": learning_service_provider,
+                "learning_areas": learning_areas,
+                "teaching": number_of_teaching_participants,
+                "non_teaching": number_of_non_teaching_participants,
+                "teaching_related": number_of_teaching_related_participants,
+
+                # ✅ averages
+                "daily_general_average": round(overall_daily, 2) if 'overall_daily' in locals() else "N/A",
+                "end_of_program_average": round(overall_end, 2) if 'overall_end' in locals() else "N/A",
+                "overall_results": round(final_rating, 2) if 'final_rating' in locals() else "N/A",
+
+                # ✅ AI outputs
+                "analysis": st.session_state.get("analysis", ""),
+                "recommendation": st.session_state.get("recommendation", "")
+            }
+
+            filepath = generate_report(data)
+
+            st.success("✅ Report Generated!")
+
+            with open(filepath, "rb") as file:
+                st.download_button(
+                    "📥 Download Form 5 (Word)",
+                    file,
+                    file_name=filepath
+                )
+
+    with tab_ppt:
+        st.markdown("### PowerPoint Report")
+        
+        ppt_training_title = st.text_input("Title of Training Program", key="ppt_title")
+        ppt_date = st.text_input("Date Conducted", key="ppt_date")
+        ppt_venue = st.text_input("Venue", key="ppt_venue")
+        ppt_program_owner = st.text_input("Program Owner", key="ppt_owner")
+
+        if st.button("Generate PowerPoint Report"):
+            if all([ppt_training_title, ppt_date, ppt_venue, ppt_program_owner]):
+                with st.spinner("Generating PowerPoint report..."):
+                    # Prepare rating data from daily and end results
+                    rating_data = {}
+                    
+                    # Combine all rating data
+                    for file_name, ratings in daily_results.items():
+                        for category, value in ratings.items():
+                            if category not in rating_data:
+                                rating_data[category] = value
+                    
+                    for file_name, ratings in end_program_results.items():
+                        for category, value in ratings.items():
+                            if category not in rating_data:
+                                rating_data[category] = value
+                    
+                    # Prepare data for PPT
+                    ppt_data = {
+                        "training_title": ppt_training_title,
+                        "date": ppt_date,
+                        "venue": ppt_venue,
+                        "program_owner": ppt_program_owner,
+                        "daily_general_average": round(overall_daily, 2) if 'overall_daily' in locals() else 0,
+                        "end_of_program_average": round(overall_end, 2) if 'overall_end' in locals() else 0,
+                        "overall_results": round(final_rating, 2) if 'final_rating' in locals() else 0,
+                        "analysis": st.session_state.get("analysis", ""),
+                        "recommendation": st.session_state.get("recommendation", "")
+                    }
+                    
+                    ppt_filepath = generate_ppt_report(ppt_data, rating_data)
+                
+                st.success("✅ PowerPoint Report Generated!")
+                
+                with open(ppt_filepath, "rb") as file:
+                    st.download_button(
+                        "📥 Download PowerPoint Report",
+                        file,
+                        file_name=ppt_filepath
+                    )
+            else:
+                st.error("Please fill in all required fields for the PowerPoint report.")
 
 # =============================
 # QUALITATIVE RESPONSES - AUTO ANALYSIS (FIXED)
