@@ -418,22 +418,30 @@ if st.button("Generate Form 5"):
         )
 
 # =============================
-# QUALITATIVE RESPONSES
+# QUALITATIVE RESPONSES - AUTO ANALYSIS (FIXED)
 # =============================
 has_daily = len(daily_results) > 0
 has_end = len(end_program_results) > 0
-# ✅ CASE 1: BOTH Daily + End → AUTOMATIC AI MODE
-if has_daily and has_end:
 
-    # ✅ AUTO AI ANALYSIS
-    if all_qualitative_responses:
-        with st.spinner("Generating AI Analysis..."):
-            ai_result = generate_qualitative_analysis(all_qualitative_responses)
+# ✅ CASE 1: BOTH Daily + End → AUTOMATIC AI MODE (ONLY ONCE)
+if has_daily and has_end:
+    # ✅ Check if auto-analysis has already been generated
+    if "auto_analysis_generated" not in st.session_state:
+        if all_qualitative_responses:
+            with st.spinner("Generating AI Analysis..."):
+                ai_result = generate_qualitative_analysis(all_qualitative_responses)
+            
+            st.session_state["auto_analysis_generated"] = True
+            st.session_state["auto_ai_result"] = ai_result
+    
+    # ✅ Display the cached result (without regenerating)
+    if st.session_state.get("auto_analysis_generated"):
         st.divider()
         st.markdown("## 🤖 Analysis & Recommendations")
-        st.write(ai_result)
+        st.write(st.session_state.get("auto_ai_result", ""))
 
         # ✅ SPLIT AI OUTPUT
+        ai_result = st.session_state.get("auto_ai_result", "")
         analysis = ""
         recommendation = ""
 
