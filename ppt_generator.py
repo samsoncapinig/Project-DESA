@@ -33,7 +33,8 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         slide2 = prs.slides[1]
         
         # Extract values from daily_rating_data with flexible key matching
-        administrative_arrangement = _find_matching_value(daily_rating_data, ["administrative", "arrangement"])\n        food = _find_matching_value(daily_rating_data, ["food", "meal"])
+        administrative_arrangement = _find_matching_value(daily_rating_data, ["administrative", "arrangement"])
+        food = _find_matching_value(daily_rating_data, ["food", "meal"])
         program_management = _find_matching_value(daily_rating_data, ["program", "management"])
         training_venue = _find_matching_value(daily_rating_data, ["training", "venue"])
         
