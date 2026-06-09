@@ -2,16 +2,18 @@ from pptx import Presentation
 from datetime import datetime
 import re
 
+
+# ===== NORMALIZE FUNCTION =====
 def _normalize(text):
     return re.sub(r'[^a-z0-9 ]', '', text.lower())
 
 
+# ===== MAIN FUNCTION =====
 def generate_ppt_report(data, daily_rating_data, end_rating_data):
 
-    template_path = "desa_template.pptx"
-    prs = Presentation(template_path)
+    prs = Presentation("desa_template.pptx")
 
-    # ===== SLIDE 1: TRAINING INFO =====
+    # ===== SLIDE 1 =====
     if len(prs.slides) > 0:
         slide1 = prs.slides[0]
         _replace_text_in_slide(slide1, {
@@ -21,50 +23,49 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
             "{{program_owner}}": data.get("program_owner", ""),
         })
 
-    # ===== SLIDE 2: DAILY EVALUATION SUMMARY =====
+    # ===== SLIDE 2 =====
     if len(prs.slides) > 1:
         slide2 = prs.slides[1]
 
-        # ✅ FIXED: Proper variable assignments
         program_management = _find_matching_value(daily_rating_data, ["program", "management"])
         accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
         training_venue = _find_matching_value(daily_rating_data, ["training", "venue"])
         food = _find_matching_value(daily_rating_data, ["food"])
         administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative"])
-        # Session average
-        session_ratings = [v for k, v in daily_rating_data.items() if _is_session_rating(k)]
+
+        session_ratings = [
+            v for k, v in daily_rating_data.items() if _is_session_rating(k)
+        ]
         avg_sessions = sum(session_ratings) / len(session_ratings) if session_ratings else 0
 
         _replace_text_in_slide(slide2, {
             "{{program_management}}": _format_value(program_management),
-            "{{accommodation}}": _format_value(accommodation),  # ✅ added (missing before)
+            "{{accommodation}}": _format_value(accommodation),
             "{{training_venue}}": _format_value(training_venue),
             "{{food}}": _format_value(food),
             "{{administrative_arrangements}}": _format_value(administrative_arrangements),
             "{{overall_daily_average}}": _format_value(data.get("daily_general_average", avg_sessions)),
         })
 
-# ===== SLIDE 3: END-OF-PROGRAM =====
-if len(prs.slides) > 2:
-    slide3 = prs.slides[2] 
+    # ===== SLIDE 3 =====
+    if len(prs.slides) > 2:
+        slide3 = prs.slides[2]
 
+        replacements = {
+            "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
+            "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
+            "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery"])),
+            "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support"])),
+            "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["team"])),
+            "{{training_venue1}}": _format_value(_find_matching_value(end_rating_data, ["training", "venue"])),
+            "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
+            "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
+            "{{end_of_program_average}}": _format_value(data.get("end_of_program_average", 0)),
+        }
 
-    replacements = {
-        "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
-        "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
-        "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery"])),
-        "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support"])),
-        "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["team"])),
-        "{{training_venue1}}": _format_value(_find_matching_value(end_rating_data, ["venue"])),
-        "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
-        "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
-        "{{end_of_program_average}}": _format_value(data.get("end_of_program_average", 0)),
-    }
+        _replace_text_in_slide(slide3, replacements)
 
-    # ✅ MISSING LINE (CRITICAL FIX)
-    _replace_text_in_slide(slide3, replacements)
-
-    # ===== SESSION SLIDES (4–8) =====
+    # ===== SESSION SLIDES =====
     session_map = [
         ("day1", 3),
         ("day2", 4),
@@ -85,19 +86,19 @@ if len(prs.slides) > 2:
 
             _replace_text_in_slide(slide, replacements)
 
-    # ===== SLIDE 9: ANALYSIS =====
+    # ===== SLIDE 9 =====
     if len(prs.slides) > 8:
         _replace_text_in_slide(prs.slides[8], {
             "{{analysis}}": data.get("analysis", "")
         })
 
-    # ===== SLIDE 10: RECOMMENDATION =====
+    # ===== SLIDE 10 =====
     if len(prs.slides) > 9:
         _replace_text_in_slide(prs.slides[9], {
             "{{recommendation}}": data.get("recommendation", "")
         })
 
-    # ===== SLIDE 11: SUMMARY =====
+    # ===== SLIDE 11 =====
     if len(prs.slides) > 10:
         _replace_text_in_slide(prs.slides[10], {
             "{{daily_general_average}}": _format_value(data.get("daily_general_average", 0)),
@@ -127,12 +128,10 @@ def _find_matching_value(data_dict, keywords):
 
     for key, value in data_dict.items():
         key_clean = _normalize(key)
-
         if all(k in key_clean for k in keywords):
             return value
 
     return "N/A"
-
 
 
 def _is_session_rating(key):
@@ -143,22 +142,17 @@ def _is_session_rating(key):
 def _replace_text_in_slide(slide, replacements):
     for shape in slide.shapes:
 
-        # ✅ TEXT BOXES
-        if hasattr(shape, "text_frame"):
+        # TEXT
+        if shape.has_text_frame:
             for paragraph in shape.text_frame.paragraphs:
-
-                full_text = "".join(run.text for run in paragraph.runs)
+                text = "".join(run.text for run in paragraph.runs)
 
                 for placeholder, value in replacements.items():
-                    if placeholder in full_text:
-                        full_text = full_text.replace(placeholder, str(value))
+                    text = text.replace(placeholder, str(value))
 
-                if paragraph.runs:
-                    paragraph.runs[0].text = full_text
-                    for run in paragraph.runs[1:]:
-                        run.text = ""
+                paragraph.text = text
 
-        # ✅ TABLES (MOVE HERE — VERY IMPORTANT)
+        # ✅ TABLES (FIXED VERSION)
         if shape.has_table:
             for row in shape.table.rows:
                 for cell in row.cells:
