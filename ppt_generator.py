@@ -32,12 +32,12 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
     if len(prs.slides) > 1:
         slide2 = prs.slides[1]
         
-        # Extract values from daily_rating_data with flexible key matching
-        program_management = _find_matching_value(daily_rating_data, ["program_management"])
-        accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
-        training_venue = _find_matching_value(daily_rating_data, ["training_venue"])
-        food = _find_matching_value(daily_rating_data, ["food"])
-        administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative_arrangements",])
+        # Extract values from Daily_Evaluation with flexible key matching
+        "program_management": data.get(program_management", "N/A"),
+        "accommodation":data.get("accommodation", "N/A"),
+        "training_venue": data.get("training_venue", "N/A"),
+        "food": data.get("food", "N/A"),
+        "administrative_arrangements" = data.get("administrative_arrangements", "N/A"),
         
         # Session averages from daily data
         session_ratings = [v for k, v in daily_rating_data.items() if _is_session_rating(k)]
