@@ -1,5 +1,9 @@
 from pptx import Presentation
 from datetime import datetime
+import re
+
+def _normalize(text):
+    return re.sub(r'[^a-z0-9 ]', '', text.lower())
 
 
 def generate_ppt_report(data, daily_rating_data, end_rating_data):
@@ -42,19 +46,22 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
 
     # ===== SLIDE 3: END-OF-PROGRAM =====
     if len(prs.slides) > 2:
-        slide3 = prs.slides[2]
+    slide3 = prs.slides[2]
 
-        replacements = {
-            "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
-            "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
-            "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery"])),
-            "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support"])),
-            "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["team"])),
-            "{{training_venue1}}": _format_value(_find_matching_value(end_rating_data, ["venue"])),
-            "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
-            "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
-            "{{end_of_program_average}}": _format_value(data.get("end_of_program_average", 0)),
-        }
+    replacements = {
+        "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
+        "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
+        "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery"])),
+        "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support"])),
+        "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["team"])),
+        "{{training_venue1}}": _format_value(_find_matching_value(end_rating_data, ["venue"])),
+        "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
+        "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
+        "{{end_of_program_average}}": _format_value(data.get("end_of_program_average", 0)),
+    }
+
+    # ✅ MISSING LINE (CRITICAL FIX)
+    _replace_text_in_slide(slide3, replacements)
 
     # ===== SESSION SLIDES (4–8) =====
     session_map = [
@@ -115,11 +122,16 @@ def _find_matching_value(data_dict, keywords):
     if not data_dict:
         return "N/A"
 
+    keywords = [_normalize(k) for k in keywords]
+
     for key, value in data_dict.items():
-        key_lower = key.lower().replace("_", " ")
-        if all(k.lower() in key_lower for k in keywords):
+        key_clean = _normalize(key)
+
+        if all(k in key_clean for k in keywords):
             return value
+
     return "N/A"
+
 
 
 def _is_session_rating(key):
@@ -146,22 +158,15 @@ def _replace_text_in_slide(slide, replacements):
                     for run in paragraph.runs[1:]:
                         run.text = ""
 
-        # TABLES
-        if shape.has_table:
-            for row in shape.table.rows:
-                for cell in row.cells:
-                    for paragraph in cell.text_frame.paragraphs:
+if shape.has_table:
+    for row in shape.table.rows:
+        for cell in row.cells:
+            text = cell.text
 
-                        full_text = "".join(run.text for run in paragraph.runs)
+            for placeholder, value in replacements.items():
+                text = text.replace(placeholder, str(value))
 
-                        for placeholder, value in replacements.items():
-                            if placeholder in full_text:
-                                full_text = full_text.replace(placeholder, str(value))
-
-                        if paragraph.runs:
-                            paragraph.runs[0].text = full_text
-                            for run in paragraph.runs[1:]:
-                                run.text = ""
+            cell.text = text
 
 
 
