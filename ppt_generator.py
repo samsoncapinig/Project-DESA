@@ -44,7 +44,7 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         average_rating_of_sessions = sum(session_ratings) / len(session_ratings) if session_ratings else 0
         
         _replace_text_in_slide(slide2, {
-            "{{administrative_arrangement}}": _format_value(administrative_arrangement),
+            "{{administrative_arrangement}}": _format_value(administrative_arrangements),
             "{{food}}": _format_value(food),
             "{{program_management}}": _format_value(program_management),
             "{{training_venue}}": _format_value(training_venue),
