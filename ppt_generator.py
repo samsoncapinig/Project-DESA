@@ -22,12 +22,11 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         slide2 = prs.slides[1]
 
         # ✅ FIXED: Proper variable assignments
-        program_management = data.get("program_management", "N/A")
-        accommodation = data.get("accommodation", "N/A")
-        training_venue = data.get("training_venue", "N/A")
-        food = data.get("food", "N/A")
-        administrative_arrangements = data.get("administrative_arrangements", "N/A")
-
+        program_management = _find_matching_value(daily_rating_data, ["program", "management"])
+        accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
+        training_venue = _find_matching_value(daily_rating_data, ["venue"])
+        food = _find_matching_value(daily_rating_data, ["food"])
+        administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative"])
         # Session average
         session_ratings = [v for k, v in daily_rating_data.items() if _is_session_rating(k)]
         avg_sessions = sum(session_ratings) / len(session_ratings) if session_ratings else 0
@@ -45,8 +44,8 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
     if len(prs.slides) > 2:
         slide3 = prs.slides[2]
 
-        _replace_text_in_slide(slide3, {
-            "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program_management"])),
+        replacements = {
+            "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
             "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
             "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery"])),
             "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support"])),
@@ -55,7 +54,7 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
             "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
             "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
             "{{end_of_program_average}}": _format_value(data.get("end_of_program_average", 0)),
-        })
+        }
 
     # ===== SESSION SLIDES (4–8) =====
     session_map = [
@@ -131,21 +130,39 @@ def _is_session_rating(key):
 def _replace_text_in_slide(slide, replacements):
     for shape in slide.shapes:
 
+        # TEXT BOXES
         if hasattr(shape, "text_frame"):
             for paragraph in shape.text_frame.paragraphs:
-                for run in paragraph.runs:
-                    for placeholder, value in replacements.items():
-                        if placeholder in run.text:
-                            run.text = run.text.replace(placeholder, str(value))
 
+                full_text = "".join(run.text for run in paragraph.runs)
+
+                for placeholder, value in replacements.items():
+                    if placeholder in full_text:
+                        full_text = full_text.replace(placeholder, str(value))
+
+                # ✅ rebuild paragraph
+                if paragraph.runs:
+                    paragraph.runs[0].text = full_text
+                    for run in paragraph.runs[1:]:
+                        run.text = ""
+
+        # TABLES
         if shape.has_table:
             for row in shape.table.rows:
                 for cell in row.cells:
                     for paragraph in cell.text_frame.paragraphs:
-                        for run in paragraph.runs:
-                            for placeholder, value in replacements.items():
-                                if placeholder in run.text:
-                                    run.text = run.text.replace(placeholder, str(value))
+
+                        full_text = "".join(run.text for run in paragraph.runs)
+
+                        for placeholder, value in replacements.items():
+                            if placeholder in full_text:
+                                full_text = full_text.replace(placeholder, str(value))
+
+                        if paragraph.runs:
+                            paragraph.runs[0].text = full_text
+                            for run in paragraph.runs[1:]:
+                                run.text = ""
+
 
 
 def _format_value(value):
