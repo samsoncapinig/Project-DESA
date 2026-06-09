@@ -13,7 +13,7 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         end_rating_data: Dictionary with end-of-program evaluation ratings {category: average_score}
     """
     
-    template_path = "desa_template.pptx.pptx"
+    template_path = "desa_template.pptx"
     
     # Load the template
     prs = Presentation(template_path)
@@ -33,10 +33,11 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         slide2 = prs.slides[1]
         
         # Extract values from daily_rating_data with flexible key matching
-        administrative_arrangement = _find_matching_value(daily_rating_data, ["administrative", "arrangement"])
-        food = _find_matching_value(daily_rating_data, ["food", "meal"])
-        program_management = _find_matching_value(daily_rating_data, ["program", "management"])
-        training_venue = _find_matching_value(daily_rating_data, ["training", "venue"])
+        program_management = _find_matching_value(daily_rating_data, ["program_management"])
+        accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
+        training_venue = _find_matching_value(daily_rating_data, ["training_venue"])
+        food = _find_matching_value(daily_rating_data, ["food"])
+        administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative_arrangements",])
         
         # Session averages from daily data
         session_ratings = [v for k, v in daily_rating_data.items() if _is_session_rating(k)]
@@ -56,22 +57,23 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         slide3 = prs.slides[2]
         
         # Extract values from end_rating_data with flexible key matching
-        program_management1 = _find_matching_value(end_rating_data, ["program", "management"])
-        attainment_of_objectives = _find_matching_value(end_rating_data, ["attainment", "objective"])
-        delivery_of_content = _find_matching_value(end_rating_data, ["delivery", "content"])
-        provision_of_support_materials = _find_matching_value(end_rating_data, ["provision", "support", "material"])
-        program_management_team1 = _find_matching_value(end_rating_data, ["program", "management", "team"])
-        training_venue1 = _find_matching_value(end_rating_data, ["training", "venue"])
-        food1 = _find_matching_value(end_rating_data, ["food"])
+        program_management = _find_matching_value(end_rating_data, ["program_management1"])
+        attainment_of_objectives = _find_matching_value(end_rating_data, ["attainment_of_objectives"])
+        delivery_of_content = _find_matching_value(end_rating_data, ["delivery_of_content"])
+        provision_of_support_materials = _find_matching_value(end_rating_data, ["provision_of_support_materials"])
+        program_management_team = _find_matching_value(end_rating_data, ["program_mamangement_team"])
+        training_venue = _find_matching_value(end_rating_data, ["training_venue1"])
+        food = _find_matching_value(end_rating_data, ["food1"])
+        accommodation = _find_matching_value(end_rating_data, ["accommodation1"])
         
         _replace_text_in_slide(slide3, {
-            "{{program_management1}}": _format_value(program_management1),
+            "{{program_management}}": _format_value(program_management),
             "{{attainment_of_objectives}}": _format_value(attainment_of_objectives),
             "{{delivery_of_content}}": _format_value(delivery_of_content),
             "{{provision_of_support_materials}}": _format_value(provision_of_support_materials),
-            "{{program_management_team1}}": _format_value(program_management_team1),
-            "{{training_venue1}}": _format_value(training_venue1),
-            "{{food1}}": _format_value(food1),
+            "{{program_management_team1}}": _format_value(program_management_team),
+            "{{training_venue}}": _format_value(training_venue),
+            "{{food}}": _format_value(food),
         })
     
     # ===== SLIDES 4-8: SESSION EVALUATIONS =====
@@ -81,6 +83,26 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
     day1_lm3 = _find_matching_value(daily_rating_data, ["day1", "lm3"])
     day1_lm4 = _find_matching_value(daily_rating_data, ["day1", "lm4"])
     day1_lm5 = _find_matching_value(daily_rating_data, ["day1", "lm5"])
+    day2_lm1 = _find_matching_value(daily_rating_data, ["day2", "lm1"])
+    day2_lm2 = _find_matching_value(daily_rating_data, ["day2", "lm2"])
+    day2_lm3 = _find_matching_value(daily_rating_data, ["day2", "lm3"])
+    day2_lm4 = _find_matching_value(daily_rating_data, ["day2", "lm4"])
+    day2_lm5 = _find_matching_value(daily_rating_data, ["day2", "lm5"])
+    day3_lm1 = _find_matching_value(daily_rating_data, ["day3", "lm1"])
+    day3_lm2 = _find_matching_value(daily_rating_data, ["day3", "lm2"])
+    day3_lm3 = _find_matching_value(daily_rating_data, ["day3", "lm3"])
+    day3_lm4 = _find_matching_value(daily_rating_data, ["day3", "lm4"])
+    day3_lm5 = _find_matching_value(daily_rating_data, ["day3", "lm5"])
+    day4_lm1 = _find_matching_value(daily_rating_data, ["day4", "lm1"])
+    day4_lm2 = _find_matching_value(daily_rating_data, ["day4", "lm2"])
+    day4_lm3 = _find_matching_value(daily_rating_data, ["day4", "lm3"])
+    day4_lm4 = _find_matching_value(daily_rating_data, ["day4", "lm4"])
+    day4_lm5 = _find_matching_value(daily_rating_data, ["day4", "lm5"])
+    day5_lm1 = _find_matching_value(daily_rating_data, ["day5", "lm1"])
+    day5_lm2 = _find_matching_value(daily_rating_data, ["day5", "lm2"])
+    day5_lm3 = _find_matching_value(daily_rating_data, ["day5", "lm3"])
+    day5_lm4 = _find_matching_value(daily_rating_data, ["day5", "lm4"])
+    day5_lm5 = _find_matching_value(daily_rating_data, ["day5", "lm5"])
     
     session_data = [
         ("{{day1_lm1}}", day1_lm1),
@@ -88,6 +110,26 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         ("{{day1_lm3}}", day1_lm3),
         ("{{day1_lm4}}", day1_lm4),
         ("{{day1_lm5}}", day1_lm5),
+        ("{{day2_lm1}}", day2_lm1),
+        ("{{day2_lm2}}", day2_lm2),
+        ("{{day2_lm3}}", day2_lm3),
+        ("{{day2_lm4}}", day2_lm4),
+        ("{{day2_lm5}}", day2_lm5),
+        ("{{day3_lm1}}", day3_lm1),
+        ("{{day3_lm2}}", day3_lm2),
+        ("{{day3_lm3}}", day3_lm3),
+        ("{{day3_lm4}}", day3_lm4),
+        ("{{day3_lm5}}", day3_lm5),
+        ("{{day4_lm1}}", day4_lm1),
+        ("{{day4_lm2}}", day4_lm2),
+        ("{{day4_lm3}}", day4_lm3),
+        ("{{day4_lm4}}", day4_lm4),
+        ("{{day4_lm5}}", day4_lm5),
+        ("{{day5_lm1}}", day5_lm1),
+        ("{{day5_lm2}}", day5_lm2),
+        ("{{day5_lm3}}", day5_lm3),
+        ("{{day5_lm4}}", day5_lm4),
+        ("{{day5_lm5}}", day5_lm5),
     ]
     
     for i, (placeholder, value) in enumerate(session_data):
@@ -118,7 +160,12 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
             "{{end_of_program_average}}": _format_value(data.get("end_of_program_average", 0)),
             "{{overall_results}}": _format_value(data.get("overall_results", 0)),
         })
-    
+    # ===== SLIDE 12: SUMMARY RATINGS =====
+    if len(prs.slides) > 11:
+        slide12 = prs.slides[11]
+        _replace_text_in_slide(slide12, {
+            "{{overall_results}}": _format_value(data.get("overall_results", 0)),
+        })
     # Save the presentation
     filename = f"DESA_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pptx"
     prs.save(filename)
