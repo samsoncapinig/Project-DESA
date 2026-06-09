@@ -429,19 +429,17 @@ if uploaded_files:
         if st.button("Generate PowerPoint Report"):
             if all([ppt_training_title, ppt_date, ppt_venue, ppt_program_owner]):
                 with st.spinner("Generating PowerPoint report..."):
-                    # Prepare rating data from daily and end results
-                    rating_data = {}
-                    
-                    # Combine all rating data
+                    # Prepare daily rating data (combine all files)
+                    daily_rating_dict = {}
                     for file_name, ratings in daily_results.items():
                         for category, value in ratings.items():
-                            if category not in rating_data:
-                                rating_data[category] = value
+                            daily_rating_dict[category] = value
                     
+                    # Prepare end-of-program rating data (combine all files)
+                    end_rating_dict = {}
                     for file_name, ratings in end_program_results.items():
                         for category, value in ratings.items():
-                            if category not in rating_data:
-                                rating_data[category] = value
+                            end_rating_dict[category] = value
                     
                     # Prepare data for PPT
                     ppt_data = {
@@ -456,7 +454,11 @@ if uploaded_files:
                         "recommendation": st.session_state.get("recommendation", "")
                     }
                     
-                    ppt_filepath = generate_ppt_report(ppt_data, rating_data)
+                    # Debug: Show what data we're passing
+                    st.info(f"📋 Daily categories detected: {list(daily_rating_dict.keys())}")
+                    st.info(f"📋 End-of-program categories detected: {list(end_rating_dict.keys())}")
+                    
+                    ppt_filepath = generate_ppt_report(ppt_data, daily_rating_dict, end_rating_dict)
                 
                 st.success("✅ PowerPoint Report Generated!")
                 
