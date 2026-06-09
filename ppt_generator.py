@@ -28,7 +28,7 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         # ✅ FIXED: Proper variable assignments
         program_management = _find_matching_value(daily_rating_data, ["program", "management"])
         accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
-        training_venue = _find_matching_value(daily_rating_data, ["venue"])
+        training_venue = _find_matching_value(daily_rating_data, ["training", "venue"])
         food = _find_matching_value(daily_rating_data, ["food"])
         administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative"])
         # Session average
@@ -44,9 +44,10 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
             "{{overall_daily_average}}": _format_value(data.get("daily_general_average", avg_sessions)),
         })
 
-    # ===== SLIDE 3: END-OF-PROGRAM =====
-    if len(prs.slides) > 2:
-    slide3 = prs.slides[2]
+# ===== SLIDE 3: END-OF-PROGRAM =====
+if len(prs.slides) > 2:
+    slide3 = prs.slides[2] 
+
 
     replacements = {
         "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
@@ -142,7 +143,7 @@ def _is_session_rating(key):
 def _replace_text_in_slide(slide, replacements):
     for shape in slide.shapes:
 
-        # TEXT BOXES
+        # ✅ TEXT BOXES
         if hasattr(shape, "text_frame"):
             for paragraph in shape.text_frame.paragraphs:
 
@@ -152,22 +153,21 @@ def _replace_text_in_slide(slide, replacements):
                     if placeholder in full_text:
                         full_text = full_text.replace(placeholder, str(value))
 
-                # ✅ rebuild paragraph
                 if paragraph.runs:
                     paragraph.runs[0].text = full_text
                     for run in paragraph.runs[1:]:
                         run.text = ""
 
-if shape.has_table:
-    for row in shape.table.rows:
-        for cell in row.cells:
-            text = cell.text
+        # ✅ TABLES (MOVE HERE — VERY IMPORTANT)
+        if shape.has_table:
+            for row in shape.table.rows:
+                for cell in row.cells:
+                    text = cell.text
 
-            for placeholder, value in replacements.items():
-                text = text.replace(placeholder, str(value))
+                    for placeholder, value in replacements.items():
+                        text = text.replace(placeholder, str(value))
 
-            cell.text = text
-
+                    cell.text = text
 
 
 def _format_value(value):
