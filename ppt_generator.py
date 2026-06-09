@@ -49,14 +49,14 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
     slide3 = prs.slides[2]
 
     replacements = {
-        "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
+        "{{program_management}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
         "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
         "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery"])),
         "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support"])),
         "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["team"])),
-        "{{training_venue1}}": _format_value(_find_matching_value(end_rating_data, ["venue"])),
-        "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
-        "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
+        "{{training_venue}}": _format_value(_find_matching_value(end_rating_data, ["venue"])),
+        "{{food}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
+        "{{accommodation}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
         "{{end_of_program_average}}": _format_value(data.get("end_of_program_average", 0)),
     }
 
