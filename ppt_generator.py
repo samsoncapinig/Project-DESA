@@ -142,23 +142,26 @@ def _is_session_rating(key):
 def _replace_text_in_slide(slide, replacements):
     for shape in slide.shapes:
 
-        # ✅ TEXT (Keeps formatting)
+        # TEXT
         if shape.has_text_frame:
             for paragraph in shape.text_frame.paragraphs:
-                for run in paragraph.runs:
-                    for placeholder, value in replacements.items():
-                        if placeholder in run.text:
-                            run.text = run.text.replace(placeholder, str(value))
+                text = "".join(run.text for run in paragraph.runs)
 
-        # ✅ TABLES (Preserve formatting too)
+                for placeholder, value in replacements.items():
+                    text = text.replace(placeholder, str(value))
+
+                paragraph.text = text
+
+        # ✅ TABLES (FIXED VERSION)
         if shape.has_table:
             for row in shape.table.rows:
                 for cell in row.cells:
-                    for paragraph in cell.text_frame.paragraphs:
-                        for run in paragraph.runs:
-                            for placeholder, value in replacements.items():
-                                if placeholder in run.text:
-                                    run.text = run.text.replace(placeholder, str(value))
+                    text = cell.text
+
+                    for placeholder, value in replacements.items():
+                        text = text.replace(placeholder, str(value))
+
+                    cell.text = text
 
 
 def _format_value(value):
