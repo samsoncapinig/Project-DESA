@@ -40,11 +40,12 @@ def _is_category_rating(key):
     ])
 
 category_ratings = [
-    float(v) for k, v in daily_rating.items()
+    float(v) for k, v in daily_rating_data.items()
     if _is_category_rating(k) and isinstance(v, (int, float))
 ]
 
 avg_sessions = sum(category_ratings) / len(category_ratings) if category_ratings else 0
+
 
 
         _replace_text_in_slide(slide2, {
