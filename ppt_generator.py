@@ -33,10 +33,19 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         food = _find_matching_value(daily_rating_data, ["food"])
         administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative"])
 
-        session_ratings = [
-            v for k, v in daily_rating_data.items() if _is_session_rating(k)
-        ]
-        avg_sessions = sum(session_ratings) / len(session_ratings) if session_ratings else 0
+def _is_category_rating(key):
+    key = key.lower()
+    return any(x in key for x in [
+        "program", "accommodation", "venue", "food", "administrative"
+    ])
+
+category_ratings = [
+    float(v) for k, v in daily_rating_data.items()
+    if _is_category_rating(k) and isinstance(v, (int, float))
+]
+
+avg_sessions = sum(category_ratings) / len(category_ratings) if category_ratings else 0
+
 
         _replace_text_in_slide(slide2, {
             "{{program_management}}": _format_value(program_management),
@@ -48,22 +57,31 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         })
 
     # ===== SLIDE 3 =====
-    if len(prs.slides) > 2:
-        slide3 = prs.slides[2]
+# ===== SLIDE 3 =====
+if len(prs.slides) > 2:
+    slide3 = prs.slides[2]
 
-        replacements = {
-            "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
-            "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
-            "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery", "content"])),
-            "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support", "materials"])),
-            "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["program", "team"])),
-            "{{training_venue1}}": _format_value(_find_matching_value(end_rating_data, ["training", "venue"])),
-            "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
-            "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
-            "{{end_of_program_average}}": _format_value(data.get("end_of_program_average", 0)),
-        }
+    # ✅ COMPUTE END PROGRAM AVERAGE (Fix 4 here)
+    end_values = [
+        float(v) for k, v in end_rating_data.items()
+        if isinstance(v, (int, float))
+    ]
 
-        _replace_text_in_slide(slide3, replacements)
+    end_avg = sum(end_values) / len(end_values) if end_values else 0
+
+    replacements = {
+        "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
+        "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
+        "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery", "content"])),
+        "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support", "materials"])),
+        "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["program", "team"])),
+        "{{training_venue1}}": _format_value(_find_matching_value(end_rating_data, ["training", "venue"])),
+        "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
+        "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
+
+        # ✅ USE COMPUTED VALUE (not data.get anymore)
+        "{{end_of_program_average}}": _format_value(end_avg),
+    }
 
     # ===== SESSION SLIDES =====
     session_map = [
@@ -139,20 +157,6 @@ def _find_matching_value(data_dict, keywords):
                 best_match = (value, match_count)
 
     return best_match[0] if best_match else "N/A"
-    
-def _find_matching_value(data_dict, keywords):
-    if not data_dict:
-        return "N/A"
-
-    keywords = [_normalize(k) for k in keywords]
-
-    for key, value in data_dict.items():
-        key_clean = _normalize(key)
-        if all(k in key_clean for k in keywords):
-            return value
-
-    return "N/A"
-
 
 def _is_session_rating(key):
     key = key.lower().replace("_", " ")
