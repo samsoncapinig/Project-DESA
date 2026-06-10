@@ -23,29 +23,30 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
             "{{program_owner}}": data.get("program_owner", ""),
         })
 
-    # ===== SLIDE 2 =====
-    if len(prs.slides) > 1:
-        slide2 = prs.slides[1]
+# ===== SLIDE 2 =====
+if len(prs.slides) > 1:
+    slide2 = prs.slides[1]
 
-        program_management = _find_matching_value(daily_rating_data, ["program", "management"])
-        accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
-        training_venue = _find_matching_value(daily_rating_data, ["training", "venue",])
-        food = _find_matching_value(daily_rating_data, ["food"])
-        administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative"])
+    program_management = _find_matching_value(daily_rating_data, ["program", "management"])
+    accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
+    training_venue = _find_matching_value(daily_rating_data, ["training", "venue"])
+    food = _find_matching_value(daily_rating_data, ["food"])
+    administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative"])
 
-        session_ratings = [
-            v for k, v in daily_rating_data.items() if _is_session_rating(k)
-        ]
-        avg_sessions = sum(session_ratings) / len(session_ratings) if session_ratings else 0
+    # ✅ STEP 2 FIX: AUTO-DETECT AVERAGE VALUES
+    avg_values = _extract_average_ratings(daily_rating_data)
+    avg_sessions = sum(avg_values) / len(avg_values) if avg_values else 0
 
-        _replace_text_in_slide(slide2, {
-            "{{program_management}}": _format_value(program_management),
-            "{{accommodation}}": _format_value(accommodation),
-            "{{training_venue}}": _format_value(training_venue),
-            "{{food}}": _format_value(food),
-            "{{administrative_arrangements}}": _format_value(administrative_arrangements),
-            "{{overall_daily_average}}": _format_value(data.get("daily_general_average", avg_sessions)),
-        })
+    _replace_text_in_slide(slide2, {
+        "{{program_management}}": _format_value(program_management),
+        "{{accommodation}}": _format_value(accommodation),
+        "{{training_venue}}": _format_value(training_venue),
+        "{{food}}": _format_value(food),
+        "{{administrative_arrangements}}": _format_value(administrative_arrangements),
+
+        # ✅ USE COMPUTED VALUE (IMPORTANT)
+        "{{overall_daily_average}}": _format_value(avg_sessions),
+    })
 
     # ===== SLIDE 3 =====
     if len(prs.slides) > 2:
@@ -139,20 +140,6 @@ def _find_matching_value(data_dict, keywords):
                 best_match = (value, match_count)
 
     return best_match[0] if best_match else "N/A"
-    
-def _find_matching_value(data_dict, keywords):
-    if not data_dict:
-        return "N/A"
-
-    keywords = [_normalize(k) for k in keywords]
-
-    for key, value in data_dict.items():
-        key_clean = _normalize(key)
-        if all(k in key_clean for k in keywords):
-            return value
-
-    return "N/A"
-
 
 def _is_session_rating(key):
     key = key.lower().replace("_", " ")
@@ -182,6 +169,30 @@ def _replace_text_in_slide(slide, replacements):
                         text = text.replace(placeholder, str(value))
 
                     cell.text = text
+def _extract_average_ratings(data_dict):
+    if not data_dict:
+        return []
+
+    avg_values = []
+
+    for key, value in data_dict.items():
+        key_clean = key.lower()
+
+        # ✅ Detect "average" keywords
+        if "average" in key_clean or "avg" in key_clean:
+            if isinstance(value, (int, float)):
+                avg_values.append(float(value))
+
+        # ✅ OR detect category rows that already store averages
+        elif any(cat in key_clean for cat in [
+            "program", "accommodation", "venue", "food",
+            "administrative", "attainment", "delivery", "support", "team"
+        ]):
+            if isinstance(value, (int, float)):
+                avg_values.append(float(value))
+
+    return avg_values
+
 
 
 def _format_value(value):
