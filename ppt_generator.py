@@ -5,7 +5,7 @@ import re
 
 # ===== NORMALIZE FUNCTION =====
 def _normalize(text):
-    return re.sub(r'[^a-z0-9 ]', '', text.lower())
+    return re.sub(r'[^a-z0-9 ]', '', text.lower().replace("_", " "))
 
 
 # ===== MAIN FUNCTION =====
@@ -27,11 +27,11 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
     if len(prs.slides) > 1:
         slide2 = prs.slides[1]
 
-        program_management = _find_matching_value(daily_rating_data, ["program", "management", "program_management"])
+        program_management = _find_matching_value(daily_rating_data, ["program", "management"])
         accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
-        training_venue = _find_matching_value(daily_rating_data, ["training", "venue", "traning_venue"])
+        training_venue = _find_matching_value(daily_rating_data, ["training", "venue",])
         food = _find_matching_value(daily_rating_data, ["food"])
-        administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative", "administrative_arrangements"])
+        administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative"])
 
         session_ratings = [
             v for k, v in daily_rating_data.items() if _is_session_rating(k)
@@ -54,9 +54,9 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
         replacements = {
             "{{program_management1}}": _format_value(_find_matching_value(end_rating_data, ["program", "management"])),
             "{{attainment_of_objectives}}": _format_value(_find_matching_value(end_rating_data, ["attainment"])),
-            "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery", "deliery_of_content"])),
-            "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support", "provision_of_support_materials"])),
-            "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["team", "program_management_team"])),
+            "{{delivery_of_content}}": _format_value(_find_matching_value(end_rating_data, ["delivery", "content"])),
+            "{{provision_of_support_materials}}": _format_value(_find_matching_value(end_rating_data, ["support", "materials"])),
+            "{{program_management_team}}": _format_value(_find_matching_value(end_rating_data, ["program", "team"])),
             "{{training_venue1}}": _format_value(_find_matching_value(end_rating_data, ["training", "venue"])),
             "{{food1}}": _format_value(_find_matching_value(end_rating_data, ["food"])),
             "{{accommodation1}}": _format_value(_find_matching_value(end_rating_data, ["accommodation"])),
@@ -120,6 +120,26 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
 
 # ===== HELPERS =====
 
+def _find_matching_value(data_dict, keywords):
+    if not data_dict:
+        return "N/A"
+
+    keywords = [_normalize(k) for k in keywords]
+
+    best_match = None
+
+    for key, value in data_dict.items():
+        key_clean = _normalize(key)
+
+        match_count = sum(1 for k in keywords if k in key_clean)
+
+        if match_count > 0:
+            # prioritize strongest match
+            if best_match is None or match_count > best_match[1]:
+                best_match = (value, match_count)
+
+    return best_match[0] if best_match else "N/A"
+    
 def _find_matching_value(data_dict, keywords):
     if not data_dict:
         return "N/A"
