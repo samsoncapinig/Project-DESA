@@ -27,11 +27,11 @@ def generate_ppt_report(data, daily_rating_data, end_rating_data):
     if len(prs.slides) > 1:
         slide2 = prs.slides[1]
 
-        program_management = _find_matching_value(average_rating_data, ["program", "management"])
-        accommodation = _find_matching_value(average_rating_data, ["accommodation"])
-        training_venue = _find_matching_value(average_rating_data, ["training", "venue",])
-        food = _find_matching_value(average_rating_data, ["food"])
-        administrative_arrangements = _find_matching_value(average_rating_data, ["administrative"])
+        program_management = _find_matching_value(daily_rating_data, ["program", "management"])
+        accommodation = _find_matching_value(daily_rating_data, ["accommodation"])
+        training_venue = _find_matching_value(daily_rating_data, ["training", "venue",])
+        food = _find_matching_value(daily_rating_data, ["food"])
+        administrative_arrangements = _find_matching_value(daily_rating_data, ["administrative"])
 
 def _is_category_rating(key):
     key = key.lower()
@@ -40,8 +40,8 @@ def _is_category_rating(key):
     ])
 
 category_ratings = [
-    float(v) for k, v in average_rating.items()
-    if _is_average_rating(k) and isinstance(v, (int, float))
+    float(v) for k, v in daily_rating.items()
+    if _is_daily_rating(k) and isinstance(v, (int, float))
 ]
 
 avg_sessions = sum(category_ratings) / len(category_ratings) if category_ratings else 0
