@@ -179,6 +179,7 @@ uploaded_files = st.file_uploader(
 daily_results = {}
 end_program_results = {}
 qualitative_results = defaultdict(list)
+participant_summary = [
 
 # =============================
 # PROCESS FILES
@@ -212,6 +213,46 @@ if uploaded_files:
                 qualitative_results[label].extend(
                     df[col].dropna().astype(str).tolist()
                 )
+        # =============================
+        # PARTICIPANT TYPE COUNT
+        # =============================
+  
+        teaching = 0
+        non_teaching = 0
+        teaching_related = 0
+
+        participant_col = None
+
+        # ✅ Step 3.1: Find the correct column automatically
+        for col in df.columns:
+            if "description" in col.lower():
+                participant_col = col
+                    break
+
+# ✅ Step 3.2: Count participants
+        if participant_col:
+            series = df[participant_col].dropna().astype(str)
+        
+            # ✅ Correct logic (NO double counting)
+            teaching_related = series.str.contains("Teaching Related", case=False).sum()
+            non_teaching = series.str.contains("Non-Teaching", case=False).sum()
+        
+            teaching = (
+                series.str.contains(r"\bTeaching\b", case=False, regex=True).sum()
+                - teaching_related
+            )
+        
+        # ✅ Step 3.3: Total respondents
+        total_participants = len(df)
+        
+        # ✅ Step 3.4: Save to list
+        participant_summary.append({
+            "File Name": f.name,
+            "Teaching": teaching,
+            "Non-Teaching": non_teaching,
+            "Teaching Related": teaching_related,
+            "Total": total_participants
+        })
 
 # =============================
 # COMBINED QUALITATIVE DATA
