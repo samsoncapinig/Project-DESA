@@ -86,7 +86,7 @@ def generate_summary(text_list):
         "Group the summarized responses into Positive Feedback and Needs Improvement. "
         "If the responses are from Most Significant Learning, Learnings, or Suggestions columns, summarize only the responses into 3 to 5 concise themes. "
         "Include direct quotation from the responses if possible. "
-        "Develop also analysis and recommendations. "
+        "Develop also findings, analysis and recommendations. "
         "Do not include subcategories, analysis, or explanations.\n\n"
         f"Responses:\n{combined_text}"
     )
@@ -112,8 +112,9 @@ def generate_ai_narrative(training_title, context_text):
     {context_text}
 
     Write:
-    1. A short analysis of responses of about 100 words
-    2. Recommendations of about 100 words
+    1. A short findings from responses of about 100 words
+    2. A short analysis of responses of about 100 words
+    3. Recommendations of about 100 words
 
     Include:
     - strengths
@@ -146,6 +147,9 @@ def generate_qualitative_analysis(responses):
 
     Format:
 
+    FINDINGS:
+    ...
+    
     ANALYSIS:
     ...
 
