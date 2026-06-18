@@ -167,12 +167,6 @@ def generate_qualitative_analysis(responses):
 
 # --- Streamlit UI ---
 
-# ==================================
-# SESSION STATE INIT
-# ==================================
-if "clear_uploader" not in st.session_state:
-    st.session_state.clear_uploader = False
-
 # =============================
 # FILE UPLOADER
 # =============================
@@ -186,13 +180,6 @@ daily_results = {}
 end_program_results = {}
 qualitative_results = defaultdict(list)
 
-# ==================================
-# CLEAR BUTTON
-# ==================================
-if st.button("Clear Uploaded Files"):
-    st.session_state.clear_uploader = not st.session_state.clear_uploader
-    st.rerun()
-    
 # =============================
 # PROCESS FILES
 # =============================
