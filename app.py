@@ -255,6 +255,30 @@ if uploaded_files:
         })
 
 # =============================
+# PARTICIPANT TYPE SUMMARY TABLE
+# =============================
+if participant_summary:
+    st.subheader("👨‍🏫 Teaching vs Non-Teaching Summary")
+
+    participant_df = pd.DataFrame(participant_summary)
+
+    # ✅ Compute totals
+    totals = participant_df[["Teaching", "Non-Teaching", "Teaching Related", "Total"]].sum()
+
+    # ✅ Add TOTAL row
+    total_row = pd.DataFrame([{
+        "File Name": "TOTAL",
+        "Teaching": totals["Teaching"],
+        "Non-Teaching": totals["Non-Teaching"],
+        "Teaching Related": totals["Teaching Related"],
+        "Total": totals["Total"]
+    }])
+
+    participant_df = pd.concat([participant_df, total_row], ignore_index=True)
+
+    st.dataframe(participant_df, use_container_width=True)
+
+# =============================
 # COMBINED QUALITATIVE DATA
 # =============================
 all_qualitative_responses = []
