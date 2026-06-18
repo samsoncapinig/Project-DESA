@@ -140,10 +140,12 @@ def generate_qualitative_analysis(responses):
 
     {combined_text}
 
-    1. Make a short analysis of these responses.
+    1. Make a short finding of these responses.
+       
+    2. Make a short analysis of these responses.
        Include strengths and weaknesses.
 
-    2. Make a short summary of recommendations based from the responses.
+    3. Make a short summary of recommendations based from the responses.
 
     Format:
 
