@@ -595,9 +595,6 @@ else:
                 st.markdown("#### 🤖 Thematic Analysis")
                 st.write(result)
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7132593770996412"
-     crossorigin="anonymous"></script>
-
 # =============================
 # FOOTER
 # =============================
