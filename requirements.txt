@@ -6,5 +6,4 @@ openpyxl
 reportlab
 docxtpl
 python-pptx
-msal
-requests
+
