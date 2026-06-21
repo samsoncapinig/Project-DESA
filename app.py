@@ -179,7 +179,6 @@ uploaded_files = st.file_uploader(
 daily_results = {}
 end_program_results = {}
 qualitative_results = defaultdict(list)
-participant_summary = [
 
 # =============================
 # PROCESS FILES
