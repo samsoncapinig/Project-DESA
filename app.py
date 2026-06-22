@@ -179,7 +179,7 @@ uploaded_files = st.file_uploader(
 daily_results = {}
 end_program_results = {}
 qualitative_results = defaultdict(list)
-
+participant_summary = []
 # =============================
 # PROCESS FILES
 # =============================
@@ -226,7 +226,7 @@ if uploaded_files:
         for col in df.columns:
             if "description" in col.lower():
                 participant_col = col
-                    break
+                break
 
 # ✅ Step 3.2: Count participants
         if participant_col:
