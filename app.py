@@ -226,7 +226,7 @@ if uploaded_files:
         for col in df.columns:
             if "description" in col.lower():
                 participant_col = col
-                break
+                    break
 
 # ✅ Step 3.2: Count participants
         if participant_col:
