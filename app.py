@@ -112,8 +112,9 @@ def generate_ai_narrative(training_title, context_text):
     {context_text}
 
     Write:
-    1. A short analysis of responses of about 100 words
-    2. Recommendations of about 100 words
+    1. A short findings of responses of about 100 words
+    2. A short analysis of responses of about 100 words
+    3. Recommendations of about 100 words
 
     Include:
     - strengths
@@ -139,13 +140,18 @@ def generate_qualitative_analysis(responses):
 
     {combined_text}
 
-    1. Make a short analysis of these responses.
+    1. Make a short findings of these responses.
+       
+    2. Make a short analysis of these responses.
        Include strengths and weaknesses.
 
     2. Make a short summary of recommendations based from the responses.
 
     Format:
 
+    FINDINGS:
+    ...
+    
     ANALYSIS:
     ...
 
