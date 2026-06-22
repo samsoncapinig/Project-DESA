@@ -272,10 +272,21 @@ if uploaded_files:
 # =============================
 # FOOTER
 # =============================
+
+from datetime import datetime
+
 st.divider()
 
-st.markdown(f"""
-**Developed by Sir Sam**  
-Project DESA • SDO Masbate City  
-© {datetime.now().year}
-""")
+col_pic, col_text = st.columns([1, 6])
+
+with col_pic:
+    st.image("samson.jpg", width=80)
+
+with col_text:
+    st.markdown(
+        f"""
+        **Developed by Sir Sam**   
+        Project DESA • SDO Masbate City  
+        © {datetime.now().year} . All rights reserved.
+        """
+    )
