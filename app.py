@@ -225,8 +225,8 @@ if uploaded_files:
         # ✅ Step 3.1: Find the correct column automatically
         for col in df.columns:
             if "description" in col.lower():
-                participant_col = col
-                    break
+            participant_col = col
+            break
 
 # ✅ Step 3.2: Count participants
         if participant_col:
