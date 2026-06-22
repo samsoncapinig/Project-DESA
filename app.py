@@ -145,7 +145,7 @@ def generate_qualitative_analysis(responses):
     2. Make a short analysis of these responses.
        Include strengths and weaknesses.
 
-    2. Make a short summary of recommendations based from the responses.
+    3. Make a short summary of recommendations based from the responses.
 
     Format:
 
@@ -222,41 +222,6 @@ all_qualitative_responses = []
 for responses in qualitative_results.values():
     all_qualitative_responses.extend(responses)
 
-# =============================
-# COMBINED QUALITATIVE TABLE + AI BUTTON
-# =============================
-
-if all_qualitative_responses:
-    st.subheader("📋 Combined Qualitative Responses")
-
-    combined_df = pd.DataFrame({
-        "Participant Responses": all_qualitative_responses
-    })
-
-    st.dataframe(combined_df, use_container_width=True)
-
-    # ✅ AI Analysis Button
-    if st.button("Analyze All Qualitative Responses"):
-        with st.spinner("Analyzing all responses..."):
-            ai_result = generate_qualitative_analysis(all_qualitative_responses)
-
-        st.markdown("## 🤖 Overall Analysis & Recommendations")
-        st.write(ai_result)
-
-        # ✅ SPLIT OUTPUT
-        combined_analysis = ""
-        combined_recommendation = ""
-
-        if "RECOMMENDATIONS:" in ai_result:
-            parts = ai_result.split("RECOMMENDATIONS:")
-            combined_analysis = parts[0].replace("ANALYSIS:", "").strip()
-            combined_recommendation = parts[1].strip()
-        else:
-            combined_analysis = ai_result
-
-        # ✅ SAVE FOR REPORT USE
-        st.session_state["analysis"] = combined_analysis
-        st.session_state["recommendation"] = combined_recommendation
 
                 
 # =============================
@@ -305,7 +270,97 @@ for label, responses in qualitative_results.items():
 
             st.markdown("#### 🤖 Thematic Analysis")
             st.write(result)
+
+# =============================
+# COMBINED QUALITATIVE TABLE + AI BUTTON
+# =============================
+
+if all_qualitative_responses:
+    st.subheader("📋 Combined Qualitative Responses")
+
+    combined_df = pd.DataFrame({
+        "Participant Responses": all_qualitative_responses
+    })
+
+    st.dataframe(combined_df, use_container_width=True)
+
+    # ✅ AI Analysis Button
+    if st.button("Analyze All Qualitative Responses"):
+        with st.spinner("Analyzing all responses..."):
+            ai_result = generate_qualitative_analysis(all_qualitative_responses)
+
+        st.markdown("## 🤖 Overall Analysis & Recommendations")
+        st.write(ai_result)
+
+        # ✅ SPLIT OUTPUT
+        combined_analysis = ""
+        combined_recommendation = ""
+
+        if "RECOMMENDATIONS:" in ai_result:
+            parts = ai_result.split("RECOMMENDATIONS:")
+            combined_analysis = parts[0].replace("ANALYSIS:", "").strip()
+            combined_recommendation = parts[1].strip()
+        else:
+            combined_analysis = ai_result
+
+        # ✅ SAVE FOR REPORT USE
+        st.session_state["analysis"] = combined_analysis
+        st.session_state["recommendation"] = combined_recommendation
+
+# =============================
+# QUALITATIVE RESPONSES - AUTO ANALYSIS (FIXED)
+# =============================
+has_daily = len(daily_results) > 0
+has_end = len(end_program_results) > 0
+
+# ✅ CASE 1: BOTH Daily + End → AUTOMATIC AI MODE (ONLY ONCE)
+if has_daily and has_end:
+    # ✅ Check if auto-analysis has already been generated
+    if "auto_analysis_generated" not in st.session_state:
+        if all_qualitative_responses:
+            with st.spinner("Generating AI Analysis..."):
+                ai_result = generate_qualitative_analysis(all_qualitative_responses)
+            
+            st.session_state["auto_analysis_generated"] = True
+            st.session_state["auto_ai_result"] = ai_result
     
+    # ✅ Display the cached result (without regenerating)
+    if st.session_state.get("auto_analysis_generated"):
+        st.divider()
+        st.markdown("## 🤖 Analysis & Recommendations")
+        st.write(st.session_state.get("auto_ai_result", ""))
+
+        # ✅ SPLIT AI OUTPUT
+        ai_result = st.session_state.get("auto_ai_result", "")
+        analysis = ""
+        recommendation = ""
+
+        if "RECOMMENDATIONS:" in ai_result:
+            parts = ai_result.split("RECOMMENDATIONS:")
+            analysis = parts[0].replace("ANALYSIS:", "").strip()
+            recommendation = parts[1].strip()
+        else:
+            analysis = ai_result
+
+        # ✅ SAVE FOR REPORT
+        st.session_state["analysis"] = analysis
+        st.session_state["recommendation"] = recommendation
+
+
+# ✅ CASE 2: ONLY ONE TYPE → KEEP YOUR OLD SYSTEM
+else:
+    for label, responses in qualitative_results.items():
+        if responses:
+            st.markdown(f"### {label}")
+            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
+
+            if st.button(f"Analyze {label}", key=f"{label}_section2"):
+                with st.spinner("Analyzing..."):
+                    result = generate_summary(responses)
+
+                st.markdown("#### 🤖 Thematic Analysis")
+                st.write(result)
+
 # =============================
 # REPORT GENERATOR UI (SHOW ONLY IF FILES EXIST)
 # =============================
@@ -477,59 +532,6 @@ if uploaded_files:
             else:
                 st.error("Please fill in all required fields for the PowerPoint report.")
 
-# =============================
-# QUALITATIVE RESPONSES - AUTO ANALYSIS (FIXED)
-# =============================
-has_daily = len(daily_results) > 0
-has_end = len(end_program_results) > 0
-
-# ✅ CASE 1: BOTH Daily + End → AUTOMATIC AI MODE (ONLY ONCE)
-if has_daily and has_end:
-    # ✅ Check if auto-analysis has already been generated
-    if "auto_analysis_generated" not in st.session_state:
-        if all_qualitative_responses:
-            with st.spinner("Generating AI Analysis..."):
-                ai_result = generate_qualitative_analysis(all_qualitative_responses)
-            
-            st.session_state["auto_analysis_generated"] = True
-            st.session_state["auto_ai_result"] = ai_result
-    
-    # ✅ Display the cached result (without regenerating)
-    if st.session_state.get("auto_analysis_generated"):
-        st.divider()
-        st.markdown("## 🤖 Analysis & Recommendations")
-        st.write(st.session_state.get("auto_ai_result", ""))
-
-        # ✅ SPLIT AI OUTPUT
-        ai_result = st.session_state.get("auto_ai_result", "")
-        analysis = ""
-        recommendation = ""
-
-        if "RECOMMENDATIONS:" in ai_result:
-            parts = ai_result.split("RECOMMENDATIONS:")
-            analysis = parts[0].replace("ANALYSIS:", "").strip()
-            recommendation = parts[1].strip()
-        else:
-            analysis = ai_result
-
-        # ✅ SAVE FOR REPORT
-        st.session_state["analysis"] = analysis
-        st.session_state["recommendation"] = recommendation
-
-
-# ✅ CASE 2: ONLY ONE TYPE → KEEP YOUR OLD SYSTEM
-else:
-    for label, responses in qualitative_results.items():
-        if responses:
-            st.markdown(f"### {label}")
-            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
-
-            if st.button(f"Analyze {label}", key=f"{label}_section2"):
-                with st.spinner("Analyzing..."):
-                    result = generate_summary(responses)
-
-                st.markdown("#### 🤖 Thematic Analysis")
-                st.write(result)
 
 # =============================
 # FOOTER
