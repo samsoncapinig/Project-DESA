@@ -542,7 +542,7 @@ st.divider()
 col_pic, col_text = st.columns([1, 6])
 
 with col_pic:
-    st.image("samson.png", width=80)
+    st.image("samson.jpg", width=80)
 
 with col_text:
     st.markdown(
